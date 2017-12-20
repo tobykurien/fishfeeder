@@ -16,14 +16,11 @@ void setup() {
 
     // Avoid multiple food dumpings on startup
     digitalWrite(LED, HIGH);
-    delay(2000);
+    delay(10000);
     digitalWrite(LED, LOW);
 }
 
 void loop() {
-    // test
-    delayHours(1);
-
     // 7 am
     dumpFood();
     delayHours(6);
