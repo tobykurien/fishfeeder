@@ -4,6 +4,8 @@
 #define SERVO   3
 #define LED     12
 
+unsigned long millisHour = 3595000; // adjust for clock drift. 3600000 in a perfect world.
+
 Servo servo;
 
 void setup() {
@@ -21,17 +23,17 @@ void setup() {
 }
 
 void loop() {
-    // 7 am
-    dumpFood();
-    delayHours(6);
-
-    // 1 pm
+    // 8 am
     dumpFood();
     delayHours(5);
 
-    // 6 pm
+    // 1 pm
     dumpFood();
-    delayHours(13);
+    delayHours(4);
+
+    // 5 pm
+    dumpFood();
+    delayHours(15);
 }
 
 void dumpFood() {
@@ -51,10 +53,7 @@ void delayHours(unsigned int hours) {
     Serial.print("Delaying for hours ");
     Serial.println(hours);
 
-    unsigned long millisHour = 3600000;
     unsigned long totalMillis = hours * millisHour;
-    Serial.print("In milliseconds: ");
-    Serial.println(totalMillis);
 
     for (int hour=hours; hour > 0; hour--) {
         Serial.print("Starting hour ");
@@ -69,18 +68,14 @@ void delayHours(unsigned int hours) {
             } else {
                 if ((millis() - start) < 1800000) {
                     // more than 30 mins to go
-                    Serial.print("+");
                     delay(750);
                 } else if ((millis() - start) < 3000000) {
                     // more than 10 minutes to go
-                    Serial.print("-");
                     delay(500);
                 } else if ((millis() - start) < 3540000) {
                     // more than 1 minute to go
-                    Serial.print("*");
                     delay(250);
                 } else {
-                    Serial.print(".");
                     delay(100);
                 }
             }
