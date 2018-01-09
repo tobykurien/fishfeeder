@@ -4,7 +4,7 @@
 #define SERVO   3
 #define LED     12
 
-unsigned long millisHour = 3595000; // adjust for clock drift. 3600000 in a perfect world.
+unsigned long millisHour = 3594286; // adjust for clock drift. 3600000 in a perfect world.
 
 Servo servo;
 
@@ -39,13 +39,13 @@ void loop() {
 void dumpFood() {
     Serial.println("Dumping food");
     servo.write(0);
-    delay(500);
+    delay(700);
     servo.write(90);
-    delay(500);
+    delay(700);
     servo.write(180);
-    delay(500);
+    delay(700);
     servo.write(90);
-    delay(500);
+    delay(700);
     servo.write(0);
 }
 
