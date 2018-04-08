@@ -5,6 +5,7 @@
 #define LED     12
 
 unsigned long millisHour = 3594286; // adjust for clock drift. 3600000 in a perfect world.
+unsigned long startMillis = 0;
 
 Servo servo;
 
@@ -16,40 +17,48 @@ void setup() {
     servo.write(0);
     pinMode(LED, OUTPUT);
 
-    // Avoid multiple food dumpings on startup
-    digitalWrite(LED, HIGH);
-    delay(10000);
-    digitalWrite(LED, LOW);
+    // wait till start time
+    delayHours(2, millis());
 }
 
 void loop() {
-    // 8 am
-    dumpFood();
-    delayHours(5);
-
-    // 1 pm
-    dumpFood();
-    delayHours(4);
-
     // 5 pm
+    startMillis = millis();
     dumpFood();
-    delayHours(15);
+    delayHours(15, startMillis);
+
+    // 8 am
+    startMillis = millis();
+    dumpFood();
+    delayHours(7, startMillis);
 }
 
 void dumpFood() {
     Serial.println("Dumping food");
     servo.write(0);
-    delay(700);
+    delay(500);
     servo.write(90);
-    delay(700);
+    delay(500);
     servo.write(180);
-    delay(700);
+    delay(500);
     servo.write(90);
-    delay(700);
+    delay(500);
+    servo.write(0);
+    
+    delay(5000);
+
+    servo.write(0);
+    delay(500);
+    servo.write(90);
+    delay(500);
+    servo.write(180);
+    delay(500);
+    servo.write(90);
+    delay(500);
     servo.write(0);
 }
 
-void delayHours(unsigned int hours) {
+void delayHours(unsigned int hours, unsigned long startMillis) {
     Serial.print("Delaying for hours ");
     Serial.println(hours);
 
