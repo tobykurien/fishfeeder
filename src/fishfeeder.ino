@@ -18,19 +18,14 @@ void setup() {
     pinMode(LED, OUTPUT);
 
     // wait till start time
-    delayHours(5, millis());
+    delay(10000);
 }
 
 void loop() {
-    // 9 am
+    // feed once a day for winter
     startMillis = millis();
     dumpFood();
-    delayHours(7, startMillis);
-
-    // 4 pm
-    startMillis = millis();
-    dumpFood();
-    delayHours(17, startMillis);
+    delayHours(24, startMillis);
 }
 
 void dumpFood() {
@@ -44,8 +39,8 @@ void dumpFood() {
     servo.write(90);
     delay(500);
     servo.write(0);
-    
-    delay(5000);
+
+    delay(10000);
 
     servo.write(0);
     delay(500);
@@ -63,15 +58,14 @@ void delayHours(unsigned int hours, unsigned long start) {
     Serial.println(hours);
 
     unsigned long totalMillis = hours * millisHour;
-
     for (int hour=hours; hour > 0; hour--) {
         Serial.print("Starting hour ");
         Serial.println(hour);
 
         while ((millis() - start) < millisHour) {
-            //Serial.println(millis() - start);
-
-            if (hour > 1) {
+            if (hour > 5) {
+                delay(5000);
+            } else if (hour > 1) {
                 delay(1000 * hour);
             } else {
                 if ((millis() - start) < 1800000) {
