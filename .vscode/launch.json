@@ -1,3 +1,10 @@
+// AUTOMATICALLY GENERATED FILE. PLEASE DO NOT MODIFY IT MANUALLY
+
+// PIO Unified Debugger
+//
+// http://docs.platformio.org/page/plus/debugging.html
+// http://docs.platformio.org/page/section_env_debug.html#projectconf-debug-tool
+
 {
     "version": "0.2.0",
     "configurations": [
@@ -10,6 +17,23 @@
             "gdbpath": "/home/toby/.platformio/penv/bin/piodebuggdb",
             "autorun": [ "source .pioinit" ],
             "preLaunchTask": "PlatformIO: Pre-Debug",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PlatformIO Debugger (Dev)",
+            "executable": "/home/toby/Projects/toby/fishfeeder/.pioenvs/uno/firmware.elf",
+            "toolchainBinDir": "/home/toby/.platformio/packages/toolchain-atmelavr/bin",
+            "preLaunchTask": "PlatformIO: Pre-Debug",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "type": "platformio-debug",
+            "request": "launch",
+            "name": "PlatformIO Debugger (Dev) (Quick)",
+            "executable": "/home/toby/Projects/toby/fishfeeder/.pioenvs/uno/firmware.elf",
+            "toolchainBinDir": "/home/toby/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart"
         }
     ]
