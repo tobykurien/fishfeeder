@@ -2,5 +2,9 @@
     "terminal.integrated.env.linux": {
         "PATH": "/home/toby/.platformio/penv/bin:/home/toby/.platformio/penv:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
         "PLATFORMIO_CALLER": "vscode"
+    },
+    "terminal.integrated.env.osx": {
+        "PATH": "/Users/tobykurien/.platformio/penv/bin:/Users/tobykurien/.platformio/penv:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/MacGPG2/bin:/usr/local/git/bin",
+        "PLATFORMIO_CALLER": "vscode"
     }
 }

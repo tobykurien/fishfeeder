@@ -2,38 +2,27 @@
 
 // PIO Unified Debugger
 //
-// http://docs.platformio.org/page/plus/debugging.html
-// http://docs.platformio.org/page/section_env_debug.html#projectconf-debug-tool
+// Documentation: https://docs.platformio.org/page/plus/debugging.html
+// Configuration: https://docs.platformio.org/page/projectconf/section_env_debug.html
 
 {
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "gdb",
+            "type": "platformio-debug",
             "request": "launch",
-            "cwd": "${workspaceRoot}",
-            "name": "PlatformIO Debugger",
-            "target": "/home/toby/Projects/toby/fishfeeder/.pioenvs/uno/firmware.elf",
-            "gdbpath": "/home/toby/.platformio/penv/bin/piodebuggdb",
-            "autorun": [ "source .pioinit" ],
+            "name": "PIO Debug",
+            "executable": "/Users/tobykurien/Projects/fishfeeder/.pioenvs/uno/firmware.elf",
+            "toolchainBinDir": "/Users/tobykurien/.platformio/packages/toolchain-atmelavr/bin",
             "preLaunchTask": "PlatformIO: Pre-Debug",
             "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "type": "platformio-debug",
             "request": "launch",
-            "name": "PlatformIO Debugger (Dev)",
-            "executable": "/home/toby/Projects/toby/fishfeeder/.pioenvs/uno/firmware.elf",
-            "toolchainBinDir": "/home/toby/.platformio/packages/toolchain-atmelavr/bin",
-            "preLaunchTask": "PlatformIO: Pre-Debug",
-            "internalConsoleOptions": "openOnSessionStart"
-        },
-        {
-            "type": "platformio-debug",
-            "request": "launch",
-            "name": "PlatformIO Debugger (Dev) (Quick)",
-            "executable": "/home/toby/Projects/toby/fishfeeder/.pioenvs/uno/firmware.elf",
-            "toolchainBinDir": "/home/toby/.platformio/packages/toolchain-atmelavr/bin",
+            "name": "PIO Debug (Skip Pre-Debug)",
+            "executable": "/Users/tobykurien/Projects/fishfeeder/.pioenvs/uno/firmware.elf",
+            "toolchainBinDir": "/Users/tobykurien/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart"
         }
     ]
