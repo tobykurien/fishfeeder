@@ -2,9 +2,10 @@
 #include <Servo.h>
 #include <RTClib.h>
 
-#define TEMPERATURE A0
-#define SERVO       2
-#define LED         12
+#define TEMP_SENS   A0
+#define TEMP_POWER  D8
+#define SERVO       D2
+#define LED         D12
 
 Servo servo;
 RTC_DS3231 rtc;
@@ -35,14 +36,13 @@ void setup() {
     servo.attach(SERVO);
     servo.write(0);
     pinMode(LED, OUTPUT);
+    pinMode(TEMP_POWER, OUTPUT);
 }
 
 void loop() {
     Serial.println(temperature());
     showTime();
-    servo.write(90);
     delay(1000);
-    servo.write(0);
 }
 
 void dumpFood() {
@@ -71,8 +71,11 @@ void dumpFood() {
 }
 
 int temperature() {
-    int t = analogRead(TEMPERATURE);
+    digitalWrite(TEMP_POWER, HIGH);
+    delay(10);
+    int t = analogRead(TEMP_SENS);
     //Serial.println(t);
+    digitalWrite(TEMP_POWER, LOW);
 
     // calibrated to degrees celcius with thermometer
     int reading = map(t, 255, 462, -1, 20);
