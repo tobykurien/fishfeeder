@@ -2,6 +2,11 @@
 #include <Servo.h>
 #include <RTClib.h>
 
+#include <ESP8266WiFi.h>          //ESP8266 Core WiFi Library (you most likely already have this in your sketch)
+#include <DNSServer.h>            //Local DNS Server used for redirecting all requests to the configuration portal
+#include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
+#include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
+
 #define TEMP_SENS   A0
 #define TEMP_POWER  D8
 #define SERVO       D2
@@ -9,6 +14,7 @@
 
 Servo servo;
 RTC_DS3231 rtc;
+WiFiManager wifiManager;
 
 char daysOfTheWeek[7][12] = {
     "Sunday", "Monday", "Tuesday", "Wednesday", 
@@ -36,6 +42,8 @@ void setup() {
     servo.write(0);
     pinMode(LED, OUTPUT);
     pinMode(TEMP_POWER, OUTPUT);
+
+    //wifiManager.autoConnect("Fish-Feeder", "FeedingNemo");
 }
 
 void loop() {
