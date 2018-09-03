@@ -65,11 +65,7 @@ void setup() {
 void loop() {
     Serial.println(temperature());
     Serial.println(getTime());
-
-    digitalWrite(LED, LOW); // high to turn off
-    delay(500);
-    digitalWrite(LED, HIGH); // high to turn off
-    delay(500);
+    delay(1000);
 }
 
 void dumpFood() {
@@ -144,10 +140,14 @@ void startWifi() {
     long startTime = millis();
     while (WiFi.softAPgetStationNum() == 0 
             && (millis() - startTime) < WIFI_TIMEOUT_MS) {
+        digitalWrite(LED, HIGH);
+        delay(100);
+        digitalWrite(LED, LOW);
         delay(100);
     }
 
     handleWebsite();
+    digitalWrite(LED, LOW);
 
     WiFi.disconnect();
     Serial.println("SoftAP shut down");
