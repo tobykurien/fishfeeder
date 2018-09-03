@@ -32,6 +32,14 @@ char daysOfTheWeek[7][12] = {
 };
 
 void setup() {
+    pinMode(LED, OUTPUT);
+    pinMode(TEMP_POWER, OUTPUT);
+    pinMode(SERVO_POWER, OUTPUT);
+    pinMode(BUTTON, INPUT_PULLUP);
+   
+    digitalWrite(SERVO_POWER, LOW);
+    digitalWrite(BUTTON, HIGH); // pull-up
+
     Serial.println(ESP.getResetReason());
     Serial.begin(9600);
     Serial.println("Starting fish feeder");
@@ -49,13 +57,8 @@ void setup() {
         //rtc.adjust(DateTime(2018, 8, 28, 16, 16, 0));
     }
 
-    pinMode(LED, OUTPUT);
-    pinMode(TEMP_POWER, OUTPUT);
-    pinMode(SERVO_POWER, OUTPUT);
-    pinMode(BUTTON, INPUT);
-    digitalWrite(BUTTON, HIGH); // pull-up
-
     //startWifi();
+    dumpFood();
 }
 
 void loop() {
@@ -69,9 +72,8 @@ void dumpFood() {
 
     // start up servo
     digitalWrite(SERVO_POWER, HIGH);
-    delay(100);
+    delay(500);
     servo.attach(SERVO);
-    servo.write(0);
 
     // turn the feeder
     servo.write(0);
@@ -83,6 +85,7 @@ void dumpFood() {
     servo.write(90);
     delay(500);
     servo.write(0);
+    delay(500);
 
     // shutdown the servo
     servo.detach();
