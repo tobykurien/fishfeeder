@@ -37,7 +37,7 @@ void setup() {
     pinMode(SERVO_POWER, OUTPUT);
     pinMode(BUTTON, INPUT_PULLUP);
    
-    digitalWrite(LED, LOW);
+    digitalWrite(LED, HIGH);
     digitalWrite(SERVO_POWER, LOW);
     digitalWrite(BUTTON, HIGH); // pull-up
 
@@ -58,7 +58,7 @@ void setup() {
         //rtc.adjust(DateTime(2018, 8, 28, 16, 16, 0));
     }
 
-    //startWifi();
+    startWifi();
     //dumpFood();
 }
 
@@ -147,7 +147,7 @@ void startWifi() {
     }
 
     handleWebsite();
-    digitalWrite(LED, LOW);
+    digitalWrite(LED, HIGH);
 
     WiFi.disconnect();
     Serial.println("SoftAP shut down");
