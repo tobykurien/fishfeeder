@@ -41,7 +41,7 @@ void setup() {
     digitalWrite(BUTTON, HIGH); // pull-up
 
     Serial.println(ESP.getResetReason());
-    Serial.begin(9600);
+    Serial.begin(115200);
     Serial.println("Starting fish feeder");
 
     if (!rtc.begin()) {
