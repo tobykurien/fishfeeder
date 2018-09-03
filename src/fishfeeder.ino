@@ -11,7 +11,7 @@
 #define TEMP_POWER  D8
 #define SERVO       D2
 #define SERVO_POWER D9
-#define LED         D12
+#define LED         2
 #define BUTTON      D10
 
 #define WIFI_SSID       "Fish-Feeder"
@@ -37,6 +37,7 @@ void setup() {
     pinMode(SERVO_POWER, OUTPUT);
     pinMode(BUTTON, INPUT_PULLUP);
    
+    digitalWrite(LED, LOW);
     digitalWrite(SERVO_POWER, LOW);
     digitalWrite(BUTTON, HIGH); // pull-up
 
@@ -57,14 +58,18 @@ void setup() {
         //rtc.adjust(DateTime(2018, 8, 28, 16, 16, 0));
     }
 
-    startWifi();
+    //startWifi();
     //dumpFood();
 }
 
 void loop() {
     Serial.println(temperature());
     Serial.println(getTime());
-    delay(1000);
+
+    digitalWrite(LED, LOW); // high to turn off
+    delay(500);
+    digitalWrite(LED, HIGH); // high to turn off
+    delay(500);
 }
 
 void dumpFood() {
