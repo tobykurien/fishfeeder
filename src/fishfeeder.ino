@@ -5,6 +5,7 @@
 #include <ESP8266WiFi.h>          //ESP8266 Core WiFi Library (you most likely already have this in your sketch)
 #include <DNSServer.h>            //Local DNS Server used for redirecting all requests to the configuration portal
 #include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
+#include "index.html.h"
 
 #define TEMP_SENS   A0
 #define TEMP_POWER  D8
@@ -31,6 +32,7 @@ char daysOfTheWeek[7][12] = {
 };
 
 void setup() {
+    Serial.println(ESP.getResetReason());
     Serial.begin(9600);
     Serial.println("Starting fish feeder");
 
@@ -50,7 +52,8 @@ void setup() {
     pinMode(LED, OUTPUT);
     pinMode(TEMP_POWER, OUTPUT);
     pinMode(SERVO_POWER, OUTPUT);
-    pinMode(BUTTON, INPUT_PULLUP);
+    pinMode(BUTTON, INPUT);
+    digitalWrite(BUTTON, HIGH); // pull-up
 
     //startWifi();
 }
@@ -58,7 +61,6 @@ void setup() {
 void loop() {
     Serial.println(temperature());
     showTime();
-    //ESP.deepSleep(1000000);
     delay(1000);
 }
 
@@ -169,5 +171,5 @@ void handleWebsite() {
 }
 
 void handleRoot() {
-  server.send(200, "text/html", "<h1>You are connected</h1>");
+  server.send(200, "text/html", INDEX_HTML);
 }
