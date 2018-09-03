@@ -8,7 +8,49 @@ const char INDEX_HTML[] PROGMEM = R"=====(
 <title>Fish Feeder</title>
 </head>
 <body>
-<h1>Hello world</h1>
+
+<h1>Fish Feeder v1.0</h1>
+
+<p>
+<b>Time:</b> {{time}}<br/>
+<b>Water temperature:</b> {{temperature}} °C<br/>
+</p>
+
+<p>
+Last 5 feedings:
+<ul>
+    <li>{{feeding1}}</li>
+    <li>{{feeding2}}</li>
+    <li>{{feeding3}}</li>
+    <li>{{feeding4}}</li>
+    <li>{{feeding5}}</li>
+</ul>
+</p>
+
+<p>
+<b>Feeding scheme:</b>
+<select onchange="alert('TODO')">
+    <option>Auto</option>
+    <option>Once a week</option>
+    <option>Twice a week</option>
+    <option>Thrice a week</option>
+    <option>Once a day</option>
+    <option>Twice a day</option>
+    <option>Thrice a day</option>
+</select>
+</p>
+
+<p>
+<b>Dumps per feeding:</b>
+<select onchange="alert('TODO')">
+    <option>One</option>
+    <option>Two</option>
+    <option>Three</option>
+    <option>Four</option>
+    <option>Five</option>
+</select>
+</p>
+
 </body>
 </html>
 )=====";

@@ -57,13 +57,13 @@ void setup() {
         //rtc.adjust(DateTime(2018, 8, 28, 16, 16, 0));
     }
 
-    //startWifi();
-    dumpFood();
+    startWifi();
+    //dumpFood();
 }
 
 void loop() {
     Serial.println(temperature());
-    showTime();
+    Serial.println(getTime());
     delay(1000);
 }
 
@@ -104,23 +104,15 @@ int temperature() {
     return reading;
 }
 
-void showTime() {
+String getTime() {
     DateTime now = rtc.now();
     
-    Serial.print(now.year(), DEC);
-    Serial.print('/');
-    Serial.print(now.month(), DEC);
-    Serial.print('/');
-    Serial.print(now.day(), DEC);
-    Serial.print(" (");
-    Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
-    Serial.print(") ");
-    Serial.print(now.hour(), DEC);
-    Serial.print(':');
-    Serial.print(now.minute(), DEC);
-    Serial.print(':');
-    Serial.print(now.second(), DEC);
-    Serial.println();
+    return String(now.year()) + '/' +
+        String(now.month()) + '/' +
+        String(now.day()) + ' ' +
+        String(now.hour()) + ':' +
+        String(now.minute()) + ':' +
+        String(now.second());
     
     // Serial.print(" since midnight 1/1/1970 = ");
     // Serial.print(now.unixtime());
@@ -174,5 +166,11 @@ void handleWebsite() {
 }
 
 void handleRoot() {
-  server.send(200, "text/html", INDEX_HTML);
+  server.send(200, "text/html", parseTemplate(FPSTR(INDEX_HTML)));
+}
+
+String parseTemplate(String str) {
+    str.replace("{{time}}", getTime());
+    str.replace("{{temperature}}", String(temperature()));
+    return str;
 }
