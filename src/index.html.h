@@ -17,19 +17,12 @@ const char INDEX_HTML[] PROGMEM = R"=====(
 </p>
 
 <p>
-Last 5 feedings:
-<ul>
-    <li>{{feeding1}}</li>
-    <li>{{feeding2}}</li>
-    <li>{{feeding3}}</li>
-    <li>{{feeding4}}</li>
-    <li>{{feeding5}}</li>
-</ul>
+Last feedings: {{lastFeedings}}
 </p>
 
 <p>
 <b>Feeding scheme:</b>
-<select onchange="alert('TODO')">
+<select onchange="onSchemeChanged(this)">
     <option>Auto</option>
     <option>Once a week</option>
     <option>Twice a week</option>
@@ -42,7 +35,7 @@ Last 5 feedings:
 
 <p>
 <b>Dumps per feeding:</b>
-<select onchange="alert('TODO')">
+<select onchange="onDumpsChanged(this)">
     <option>One</option>
     <option>Two</option>
     <option>Three</option>
@@ -50,6 +43,33 @@ Last 5 feedings:
     <option>Five</option>
 </select>
 </p>
+
+<p>
+    <input type="button" value="Feed now" onclick="onFeed()"/>
+</p>
+
+<script>
+    function onDumpsChanged(selectList) {
+        alert('TODO');
+    }
+
+    function onSchemeChanged(selectList) {
+        alert('TODO');
+    }
+
+    function onFeed() {
+        makeRequest("/feed");
+    }
+
+    function makeRequest(url) {
+        var oReq = new XMLHttpRequest();
+        oReq.addEventListener("load", function() {
+            alert(this.responseText);
+        });
+        oReq.open("GET", url);
+        oReq.send();        
+    }
+</script>
 
 </body>
 </html>

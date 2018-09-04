@@ -155,9 +155,15 @@ void startWifi() {
 
 void handleWebsite() {
   dnsServer.start(DNS_PORT, "*", apIP); // captive portal
+  
+  server.on("/feed", [](){
+      server.send(200, "text/plain", "Done");
+      dumpFood();
+  });
+
   server.on("/", handleRoot);
-  // replay to all requests with same HTML
   server.onNotFound(handleRoot);
+
   server.begin();
   Serial.println("HTTP server started");
 
@@ -177,5 +183,6 @@ void handleRoot() {
 String parseTemplate(String str) {
     str.replace("{{time}}", getTime());
     str.replace("{{temperature}}", String(temperature()));
+    str.replace("{{lastFeedings}}", ""); // TODO - comma-separated list of times
     return str;
 }
