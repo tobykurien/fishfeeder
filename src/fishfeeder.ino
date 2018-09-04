@@ -10,7 +10,7 @@
 #define TEMP_SENS   A0
 #define TEMP_POWER  D8
 #define SERVO       D2
-#define SERVO_POWER D9
+#define SERVO_POWER D7
 #define LED         2
 #define BUTTON      D10
 
