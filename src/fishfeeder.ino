@@ -155,7 +155,11 @@ void startWifi() {
 
 void handleWebsite() {
   dnsServer.start(DNS_PORT, "*", apIP); // captive portal
-  
+
+  server.on("/monitor", [](){
+      server.send(200, "text/plain", parseTemplate(FPSTR(MONITOR_JSON)));
+  });
+
   server.on("/feed", [](){
       server.send(200, "text/plain", "Done");
       dumpFood();
@@ -177,7 +181,7 @@ void handleWebsite() {
 }
 
 void handleRoot() {
-  server.send(200, "text/html", parseTemplate(FPSTR(INDEX_HTML)));
+  server.send(200, "text/html", FPSTR(INDEX_HTML));
 }
 
 String parseTemplate(String str) {
