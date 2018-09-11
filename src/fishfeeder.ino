@@ -101,7 +101,7 @@ int temperature() {
     digitalWrite(TEMP_POWER, LOW);
 
     // calibrated to degrees celcius with thermometer
-    int reading = map(t, 497, 716, 27, 8);
+    int reading = map(t, 497, 739, 27, 5);
     return reading;
 }
 
