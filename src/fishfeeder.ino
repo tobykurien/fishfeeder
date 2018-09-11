@@ -44,7 +44,7 @@ void setup() {
     if (rtc.lostPower()) {
         Serial.println("RTC lost power, lets set the time!");
         // following line sets the RTC to the date & time this sketch was compiled
-        rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+        //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         // This line sets the RTC with an explicit date & time, for example to set
         //rtc.adjust(DateTime(2018, 8, 28, 16, 16, 0));
     }
@@ -171,6 +171,20 @@ void handleWebsite() {
   server.on("/feed", [](){
       server.send(200, "text/plain", "Done");
       dumpFood();
+  });
+
+  server.on("/app.js", [](){
+      server.send(200, "text/javascript", FPSTR(APP_JS));
+  });
+
+  server.on("/set-time", []() {
+      rtc.adjust(DateTime(
+          server.arg("year").toInt(), 
+          server.arg("month").toInt(), 
+          server.arg("day").toInt(), 
+          server.arg("hour").toInt(), 
+          server.arg("minute").toInt(), 
+          server.arg("second").toInt()));
   });
 
   server.on("/", handleRoot);
