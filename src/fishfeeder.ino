@@ -6,19 +6,9 @@
 #include <DNSServer.h>            //Local DNS Server used for redirecting all requests to the configuration portal
 #include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
 
+#include "config.h"
 #include "index.html.h"
 #include "timer.h"
-
-#define TEMP_SENS   A0
-#define TEMP_POWER  D8
-#define SERVO       D2
-#define SERVO_POWER D7
-#define LED         2
-#define BUTTON      D10
-
-#define WIFI_SSID       "Fish-Feeder"
-#define WIFI_PASS       "FeedingNemo"
-#define WIFI_TIMEOUT_MS 30000
 
 Servo servo;
 RTC_DS3231 rtc;
@@ -31,11 +21,6 @@ ESP8266WebServer  server(80);
 Timer             feedTimer(5*60*1000),     // how often to check feeding
                   tempLogTimer(60*60*1000), // how often to log temperature
                   debugTimer(1000);
-
-char daysOfTheWeek[7][12] = {
-    "Sunday", "Monday", "Tuesday", "Wednesday", 
-    "Thursday", "Friday", "Saturday"
-};
 
 void setup() {
     pinMode(LED, OUTPUT);
@@ -59,17 +44,16 @@ void setup() {
     if (rtc.lostPower()) {
         Serial.println("RTC lost power, lets set the time!");
         // following line sets the RTC to the date & time this sketch was compiled
-        //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+        rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         // This line sets the RTC with an explicit date & time, for example to set
         //rtc.adjust(DateTime(2018, 8, 28, 16, 16, 0));
     }
 
-    //startWifi();
-    //dumpFood();
-    
     feedTimer.start();
     tempLogTimer.start();
     debugTimer.start();
+
+    startWifi();
 }
 
 void loop() {
@@ -85,7 +69,7 @@ void loop() {
 
     if (debugTimer.done()) {
         Serial.print(getTime());
-        Serial.print(" ");
+        Serial.print("\t");
         Serial.print(temperature());
         Serial.println("°C");
     }
@@ -122,7 +106,6 @@ float temperature() {
     digitalWrite(TEMP_POWER, HIGH);
     delay(10);
     int t = analogRead(TEMP_SENS);
-    Serial.println(t * 10);
     digitalWrite(TEMP_POWER, LOW);
 
     // calibrated to degrees celcius with thermometer
