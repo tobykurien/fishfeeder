@@ -93,16 +93,16 @@ void dumpFood() {
     digitalWrite(SERVO_POWER, LOW);
 }
 
-int temperature() {
+float temperature() {
     digitalWrite(TEMP_POWER, HIGH);
     delay(10);
     int t = analogRead(TEMP_SENS);
-    Serial.println(t);
+    Serial.println(t * 10);
     digitalWrite(TEMP_POWER, LOW);
 
     // calibrated to degrees celcius with thermometer
-    int reading = map(t, 497, 739, 27, 5);
-    return reading;
+    int reading = map(t*10, 4970, 7390, 270, 50);
+    return reading / 10.0;
 }
 
 String getTime() {
