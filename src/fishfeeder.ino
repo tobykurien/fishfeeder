@@ -58,7 +58,7 @@ void setup() {
         //rtc.adjust(DateTime(2018, 8, 28, 16, 16, 0));
     }
 
-    startWifi();
+    //startWifi();
     //dumpFood();
 }
 
@@ -97,11 +97,11 @@ int temperature() {
     digitalWrite(TEMP_POWER, HIGH);
     delay(10);
     int t = analogRead(TEMP_SENS);
-    //Serial.println(t);
+    Serial.println(t);
     digitalWrite(TEMP_POWER, LOW);
 
     // calibrated to degrees celcius with thermometer
-    int reading = map(t, 255, 462, -1, 20);
+    int reading = map(t, 497, 716, 27, 8);
     return reading;
 }
 

@@ -23,7 +23,7 @@
         {
             "type": "platformio-debug",
             "request": "launch",
-            "name": "PIO Debug (Skip Pre-Debug)",
+            "name": "PIO Debug (skip Pre-Debug)",
             "executable": "/Users/tobykurien/Projects/fishfeeder/.pioenvs/d1/firmware.elf",
             "toolchainBinDir": "/Users/tobykurien/.platformio/packages/toolchain-xtensa/bin",
             "internalConsoleOptions": "openOnSessionStart"
