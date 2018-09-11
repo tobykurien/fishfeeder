@@ -5,7 +5,9 @@
 #include <ESP8266WiFi.h>          //ESP8266 Core WiFi Library (you most likely already have this in your sketch)
 #include <DNSServer.h>            //Local DNS Server used for redirecting all requests to the configuration portal
 #include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
+
 #include "index.html.h"
+#include "timer.h"
 
 #define TEMP_SENS   A0
 #define TEMP_POWER  D8
@@ -25,6 +27,10 @@ const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
 IPAddress         apIP(10, 10, 10, 1);    // Private network for server
 DNSServer         dnsServer;              // Create the DNS object
 ESP8266WebServer  server(80);
+
+Timer             feedTimer(5*60*1000),     // how often to check feeding
+                  tempLogTimer(60*60*1000), // how often to log temperature
+                  debugTimer(1000);
 
 char daysOfTheWeek[7][12] = {
     "Sunday", "Monday", "Tuesday", "Wednesday", 
@@ -60,11 +66,30 @@ void setup() {
 
     //startWifi();
     //dumpFood();
+    
+    feedTimer.start();
+    tempLogTimer.start();
+    debugTimer.start();
 }
 
 void loop() {
-    Serial.println(temperature());
-    Serial.println(getTime());
+    if (feedTimer.done()) {
+        Serial.println("Checking feeding schedule...");
+        // TODO - check feeding schedule
+    }
+
+    if (tempLogTimer.done()) {
+        Serial.println("Logging temperature...");
+        // TODO - log temperature if different to previous
+    }
+
+    if (debugTimer.done()) {
+        Serial.print(getTime());
+        Serial.print(" ");
+        Serial.print(temperature());
+        Serial.println("°C");
+    }
+
     delay(1000);
 }
 

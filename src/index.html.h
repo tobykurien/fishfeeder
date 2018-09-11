@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#ifndef __INDEX_HTML__
+#define __INDEX_HTML__
 
 const char MONITOR_JSON[] PROGMEM = R"=====(
 {
@@ -107,3 +109,5 @@ var Mark={includes:{},globals:{},delimiter:">",compact:false,_copy:function(d,c)
 </body>
 </html>
 )=====";
+
+#endif
