@@ -10,7 +10,7 @@ function onSchemeChanged(selectList) {
 
 function onFeed() {
     makeRequest("/feed", function() {
-        alert(this.responseText);
+        toast(this.responseText);
     });
 }
 
@@ -23,7 +23,7 @@ function onSetTime() {
                  "&minute=" + now.getMinutes() + 
                  "&second=" + now.getSeconds();
     makeRequest("/set-time?" + params, function() {
-        alert(this.responseText);
+        toast(this.responseText);
     });
 }
 
@@ -41,6 +41,11 @@ function updateMonitor() {
         var out = Mark.up(template, data);
         document.getElementById('monitor-output').innerHTML = out;
     });
+}
+
+function toast(message) {
+    console.log(message);
+    alert(message);
 }
 
 setInterval(updateMonitor, 1000);
