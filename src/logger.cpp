@@ -54,6 +54,6 @@ void Logger::logTemperature(uint32_t timestamp, float temperature) {
     }
 }
 
-DataStruct Logger::getLogData() {
+DataStruct Logger::getData() {
     return logData;
 }

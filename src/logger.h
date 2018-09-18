@@ -4,11 +4,16 @@
 #ifndef __LOGGER__
 #define __LOGGER__
 
-#define CHECK_BYTE 0xA0
+#define CHECK_BYTE 0xA1
+
+struct Settings {
+    uint8_t feedingScheme;
+    uint8_t feedingAmount;
+};
 
 struct Feeding {
     uint32_t timestamp;
-    byte amount;
+    uint8_t amount;
     float temperature;
 };
 
@@ -17,10 +22,12 @@ struct Temperature {
     float temperature;
 };
 
+// EEPROM data structure for all saved data
 struct DataStruct {
-    byte latestFeeding;
+    Settings settings;
+    uint8_t latestFeeding;
     Feeding feedings[255];
-    byte latestTemperature;
+    uint8_t latestTemperature;
     Temperature temperatures[255];
 };
 
@@ -32,8 +39,11 @@ class Logger {
 
         void logFeeding(uint32_t timestamp, byte amount, float temperature);
         void logTemperature(uint32_t timestamp, float temperature);
+
+        void saveSettings(byte feedingScheme, byte feedingAmount);
+        Settings getSettings();
         
-        DataStruct getLogData();
+        DataStruct getData();
 
     private:
         DataStruct logData;
