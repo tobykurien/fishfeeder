@@ -10,53 +10,69 @@
 </head>
 
 <body>
-    <script id="monitor" type="text/template">
-        <!-- HTML template fragments -->
+    <script type="text/template" id="tpl_temperature">
+        {{temperature}} °C
+    </script>
+    <script type="text/template" id="tpl_time">
+        {{time}}
+    </script>
+    <script type="text/template" id="tpl_feedings">
+        {{lastFeedings}}
+        <tr>
+            <td>{{time}}</td>
+            <td>{{temperature}}</td>
+            <td>{{feeds}}</td>
+        </tr>
+        {{/lastFeedings}}            
+    </script>
+
+    <div class="container">
+
+        <p style="display: flex; justify-content: center">
+            <b>Fish Feeder v1.0</b>
+        </p>
+
         <div class="cards">
 
             <div class="cards-stacked">
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title h5">Temperature</div>
-                    </div> 
-                    <div class="card-body">
-                            {{temperature}} °C
                     </div>
+                    <div class="card-body" id="temperature"></div>
                 </div>
-                
+
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title h5">Time</div>
-                    </div> 
-                    <div class="card-body">
-                        {{time}}
                     </div>
+                    <div class="card-body" id="time"></div>
                     <div class="card-footer">
                         <button class="btn btn-primary" onclick="onSetTime()">Update time</button>
-                    </div> 
+                    </div>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">
                     <div class="card-title h5">Configuration</div>
-                </div> 
+                </div>
                 <div class="card-body">
-            
-                        <b>Feeding scheme:</b><br/>
-                        <select onchange="onSchemeChanged(this)">
-                            <option>Auto</option>
-                            <option>Once a week</option>
-                            <option>Twice a week</option>
-                            <option>Thrice a week</option>
-                            <option>Once a day</option>
-                            <option>Twice a day</option>
-                            <option>Thrice a day</option>
-                        </select>
-                        </p>
-                        
-                        <p>
-                        <b>Feed amount:</b><br/>
+
+                    <b>Feeding scheme:</b><br />
+                    <select onchange="onSchemeChanged(this)">
+                        <option>Auto</option>
+                        <option>Once a week</option>
+                        <option>Twice a week</option>
+                        <option>Thrice a week</option>
+                        <option>Once a day</option>
+                        <option>Twice a day</option>
+                        <option>Thrice a day</option>
+                    </select>
+                    </p>
+
+                    <p>
+                        <b>Feed amount:</b><br />
                         <select onchange="onDumpsChanged(this)">
                             <option>One</option>
                             <option>Two</option>
@@ -66,42 +82,23 @@
                         </select>
                 </div>
                 <div class="card-footer">
-                        <button onclick="onFeed()" class="btn btn-primary">Feed now</button>
-                </div> 
-            </div>       
-        </div>    
+                    <button onclick="onFeed()" class="btn btn-primary">Feed now</button>
+                </div>
+            </div>
+        </div>
 
         <p></p>
 
         <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-            <th>Time</th>
-            <th>Water °C</th>
-            <th>Feeds</th>
-            </tr>
-        </thead>
-        <tbody>
-
-            {{lastFeedings}}
+            <thead>
                 <tr>
-                    <td>{{time}}</td>
-                    <td>{{temperature}}</td>
-                    <td>{{feeds}}</td>
+                    <th>Time</th>
+                    <th>Water °C</th>
+                    <th>Feeds</th>
                 </tr>
-            {{/lastFeedings}}
-        
-        </tbody>
-        </table>    
-    </script>
-
-    <div class="container">
-
-        <div style="display: flex; justify-content: center">
-            <h1>Fish Feeder v1.0</h1>
-        </div>
-
-        <p id="monitor-output"></p>
+            </thead>
+            <tbody id="feedings"></tbody>
+        </table>
     </div>
 
     <script src="app.js"></script>

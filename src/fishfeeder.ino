@@ -8,6 +8,7 @@
 
 #include "config.h"
 #include "index.html.h"
+#include "assets.h"
 #include "timer.h"
 
 Servo servo;
@@ -184,7 +185,7 @@ void handleWebsite() {
   server.on("/markup.js", [](){
       server.send(200, "text/javascript", FPSTR(MARKUP_JS));
   });
-  
+
   server.on("/set-time", []() {
       rtc.adjust(DateTime(
           server.arg("year").toInt(), 

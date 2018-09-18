@@ -1,5 +1,3 @@
-const debug = true;
-
 function onDumpsChanged(selectList) {
     alert('TODO');
 }
@@ -37,9 +35,14 @@ function makeRequest(url, onComplete) {
 function updateMonitor() {
     makeRequest("/monitor", function() {
         var data = JSON.parse(this.response);
-        var template = document.getElementById('monitor').firstChild.textContent;
-        var out = Mark.up(template, data);
-        document.getElementById('monitor-output').innerHTML = out;
+
+        templates = ["temperature", "time", "feedings"]
+        for (i in templates) {
+            let id = templates[i]
+            var template = document.getElementById("tpl_" + id).innerHTML;
+            var out = Mark.up(template, data);
+            document.getElementById(id).innerHTML = out;
+        }
     });
 }
 
