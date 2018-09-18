@@ -1,0 +1,229 @@
+/* ------ Extracted from https://github.com/picturepan2/spectre/ ------- */  
+
+html {
+    font-family: sans-serif; /* 1 */
+    -webkit-text-size-adjust: 100%; /* 3 */ 
+    -ms-text-size-adjust: 100%; /* 3 */
+}
+
+body {
+    margin: 0;
+}
+  
+/** Correct the font size and margin on `h1` elements within `section` and `article` contexts in Chrome, Firefox, and Safari. */
+h1 {
+  font-size: 2em;
+  margin: .67em 0;
+}
+
+a {
+background-color: transparent; /* 1 */
+-webkit-text-decoration-skip: objects; /* 2 */
+}
+
+/** Remove the outline on focused links when they are also active or hovered in all browsers (opinionated). */
+a:active,
+a:hover {
+outline-width: 0;
+}
+
+b,
+strong {
+  font-weight: inherit;
+}
+
+/** Add the correct font weight in Chrome, Edge, and Safari. */
+b,
+strong {
+  font-weight: bolder;
+}
+
+.card {
+    background: #fff;
+    border: .05rem solid #e7e9ed;
+    border-radius: .1rem;
+    display: flex;
+    display: -ms-flexbox;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+  
+  .card .card-header,
+  .card .card-body,
+  .card .card-footer {
+    padding: .8rem;
+    padding-bottom: 0;
+  }
+  
+  .card .card-header:last-child,
+  .card .card-body:last-child,
+  .card .card-footer:last-child {
+    padding-bottom: .8rem;
+  }
+  
+  .card .card-body {
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+  }
+  
+  .card .card-image {
+    padding-top: .8rem;
+  }
+  
+  .card .card-image:first-child {
+    padding-top: 0;
+  }
+  
+  .card .card-image:first-child img {
+    border-top-left-radius: .1rem;
+    border-top-right-radius: .1rem;
+  }
+  
+  .card .card-image:last-child img {
+    border-bottom-left-radius: .1rem;
+    border-bottom-right-radius: .1rem;
+  }
+
+  .btn {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: #fff;
+    border: .05rem solid #5755d9;
+    border-radius: .1rem;
+    color: #5755d9;
+    cursor: pointer;
+    display: inline-block;
+    font-size: .8rem;
+    height: 1.8rem;
+    line-height: 1.2rem;
+    outline: none;
+    padding: .25rem .4rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all .2s ease;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  
+  .btn:focus {
+    box-shadow: 0 0 0 .1rem rgba(87, 85, 217, .2);
+  }
+  
+  .btn:focus,
+  .btn:hover {
+    background: #f1f1fc;
+    border-color: #4b48d6;
+    text-decoration: none;
+  }
+  
+  .btn:active,
+  .btn.active {
+    background: #4b48d6;
+    border-color: #3634d2;
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  .btn:active.loading::after,
+  .btn.active.loading::after {
+    border-bottom-color: #fff;
+    border-left-color: #fff;
+  }
+  
+  .btn[disabled],
+  .btn:disabled,
+  .btn.disabled {
+    cursor: default;
+    opacity: .5;
+    pointer-events: none;
+  }
+  
+  .btn.btn-primary {
+    background: #5755d9;
+    border-color: #4b48d6;
+    color: #fff;
+  }
+  
+  .btn.btn-primary:focus,
+  .btn.btn-primary:hover {
+    background: #4240d4;
+    border-color: #3634d2;
+    color: #fff;
+  }
+  
+  .btn.btn-primary:active,
+  .btn.btn-primary.active {
+    background: #3a38d2;
+    border-color: #302ecd;
+    color: #fff;
+  }
+  
+  .btn.btn-primary.loading::after {
+    border-bottom-color: #fff;
+    border-left-color: #fff;
+  }
+  .table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    text-align: left; 
+    width: 100%;
+  }
+  
+  .table.table-striped tbody tr:nth-of-type(odd) {
+    background: #f8f9fa;
+  }
+  
+  .table tbody tr.active,
+  .table.table-striped tbody tr.active {
+    background: #f0f1f4;
+  }
+  
+  .table.table-hover tbody tr:hover {
+    background: #f0f1f4;
+  }
+  
+  .table.table-scroll {
+    display: block;
+    overflow-x: auto;
+    padding-bottom: .75rem;
+    white-space: nowrap;
+  }
+  
+  .table td,
+  .table th {
+    border-bottom: .05rem solid #e7e9ed;
+    padding: .6rem .4rem;
+  }
+  
+  .table th {
+    border-bottom-width: .1rem;
+  }
+
+/* ------ Toby's changes ------- */  
+
+.card {
+    width: 15em;
+    margin-top: 1em;
+}
+
+.cards {
+    display:flex; 
+    flex-direction: row; 
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.cards-stacked {
+    display:flex; 
+    flex-direction: column; 
+    justify-content: space-between;
+}
+
+.table {
+    margin: 1em;
+}
