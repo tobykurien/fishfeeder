@@ -1,4 +1,6 @@
 // App configuration
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
 
 // Hardware pins
 #define TEMP_SENS   A0
@@ -14,7 +16,9 @@
 #define WIFI_TIMEOUT_MS 30000
 
 // Misc
-char daysOfTheWeek[7][12] = {
-    "Sunday", "Monday", "Tuesday", "Wednesday", 
-    "Thursday", "Friday", "Saturday"
-};
+// char daysOfTheWeek[7][12] = {
+//     "Sunday", "Monday", "Tuesday", "Wednesday", 
+//     "Thursday", "Friday", "Saturday"
+// };
+
+#endif

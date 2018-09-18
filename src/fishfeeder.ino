@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <Servo.h>
 #include <RTClib.h>
 
 #include <ESP8266WiFi.h>          //ESP8266 Core WiFi Library (you most likely already have this in your sketch)
@@ -10,9 +9,12 @@
 #include "index.html.h"
 #include "assets.h"
 #include "timer.h"
+#include "logger.h"
+#include "feeder.h"
 
-Servo servo;
 RTC_DS3231 rtc;
+Logger logger;
+Feeder feeder;
 
 const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
 IPAddress         apIP(10, 10, 10, 1);    // Private network for server
@@ -26,11 +28,9 @@ Timer             feedTimer(5*60*1000),     // how often to check feeding
 void setup() {
     pinMode(LED, OUTPUT);
     pinMode(TEMP_POWER, OUTPUT);
-    pinMode(SERVO_POWER, OUTPUT);
     pinMode(BUTTON, INPUT_PULLUP);
    
     digitalWrite(LED, HIGH);
-    digitalWrite(SERVO_POWER, LOW);
     digitalWrite(BUTTON, HIGH); // pull-up
 
     Serial.println(ESP.getResetReason());
@@ -53,19 +53,22 @@ void setup() {
     feedTimer.start();
     tempLogTimer.start();
     debugTimer.start();
+    logger.start();
 
     startWifi();
 }
 
 void loop() {
     if (feedTimer.done()) {
-        Serial.println("Checking feeding schedule...");
-        // TODO - check feeding schedule
+        int amount = feeder.checkAndFeed();
+        if (amount > 0) {
+            // log the feeding event
+            logger.logFeeding(rtc.now().unixtime(), amount, temperature());
+        }
     }
 
     if (tempLogTimer.done()) {
-        Serial.println("Logging temperature...");
-        // TODO - log temperature if different to previous
+        logger.logTemperature(rtc.now().unixtime(), temperature());
     }
 
     if (debugTimer.done()) {
@@ -76,31 +79,6 @@ void loop() {
     }
 
     delay(1000);
-}
-
-void dumpFood() {
-    Serial.println("Dumping food");
-
-    // start up servo
-    digitalWrite(SERVO_POWER, HIGH);
-    delay(500);
-    servo.attach(SERVO);
-
-    // turn the feeder
-    servo.write(0);
-    delay(500);
-    servo.write(90);
-    delay(500);
-    servo.write(180);
-    delay(500);
-    servo.write(90);
-    delay(500);
-    servo.write(0);
-    delay(500);
-
-    // shutdown the servo
-    servo.detach();
-    digitalWrite(SERVO_POWER, LOW);
 }
 
 float temperature() {
@@ -123,15 +101,6 @@ String getTime() {
         String(now.hour()) + ':' +
         String(now.minute()) + ':' +
         String(now.second());
-    
-    // Serial.print(" since midnight 1/1/1970 = ");
-    // Serial.print(now.unixtime());
-    // Serial.print("s = ");
-    // Serial.print(now.unixtime() / 86400L);
-    // Serial.println("d");   
-
-    // calculate a date which is 7 days and 30 seconds into the future
-    // DateTime future (now + TimeSpan(7,12,30,6));     
 }
 
 void startWifi() {
@@ -171,7 +140,7 @@ void handleWebsite() {
 
   server.on("/feed", [](){
       server.send(200, "text/plain", "Done");
-      dumpFood();
+      feeder.feedNow();
   });
 
   server.on("/app.js", [](){
