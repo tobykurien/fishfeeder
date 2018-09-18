@@ -177,6 +177,14 @@ void handleWebsite() {
       server.send(200, "text/javascript", FPSTR(APP_JS));
   });
 
+  server.on("/app.css", [](){
+      server.send(200, "text/stylesheet", FPSTR(APP_CSS));
+  });
+
+  server.on("/markup.js", [](){
+      server.send(200, "text/javascript", FPSTR(MARKUP_JS));
+  });
+  
   server.on("/set-time", []() {
       rtc.adjust(DateTime(
           server.arg("year").toInt(), 
