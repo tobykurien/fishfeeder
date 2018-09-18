@@ -55,6 +55,8 @@ void setup() {
     debugTimer.start();
     logger.start();
 
+    logger.logTemperature(rtc.now().unixtime(), temperature());
+
     startWifi();
 }
 

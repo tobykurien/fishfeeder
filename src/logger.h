@@ -4,15 +4,17 @@
 #ifndef __LOGGER__
 #define __LOGGER__
 
+#define CHECK_BYTE 0xA0
+
 struct Feeding {
     uint32_t timestamp;
     byte amount;
-    int temperature;
+    float temperature;
 };
 
 struct Temperature {
     uint32_t timestamp;
-    int temperature;
+    float temperature;
 };
 
 struct DataStruct {
@@ -31,10 +33,11 @@ class Logger {
         void logFeeding(uint32_t timestamp, byte amount, float temperature);
         void logTemperature(uint32_t timestamp, float temperature);
         
-        Feeding* getFeedings(int batch);
-        Temperature* getTemperatures(int batch);
+        DataStruct getLogData();
 
     private:
+        DataStruct logData;
+        void writeLogData();
 };
 
 #endif
