@@ -44,7 +44,7 @@ class Logger {
         void saveSettings(byte feedingScheme, byte feedingAmount);
         Settings getSettings();
         
-        DataStruct getData();
+        DataStruct* getData();
 
     private:
         DataStruct logData;

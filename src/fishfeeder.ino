@@ -144,19 +144,18 @@ void handleWebsite() {
   });
 
   server.on("/feedings", [](){
-      WiFiClient client = server.client();
-      client.write("Content-Type: application/json");
-      client.write("{ \"lastFeedings\": [");
+      server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+      server.send(200, "application/json", String());
+      server.sendContent("{ \"lastFeedings\": [");
       // TODO - implement circular buffer with check for valid timestamp
       for (int i=0; i < 10; i++) {
-          Feeding f = logger.getData().feedings[i];
-          client.print("{ \"time\": " + String(f.timestamp));
-          client.print(", \"temperature\": " + String(f.temperature));
-          client.print(", \"amount\": " + String(f.amount) + "}");
-          if (i != 9) client.write(",");
-          client.flush();
+          Feeding f = logger.getData()->feedings[i];
+          server.sendContent("{ \"time\": " + String(f.timestamp));
+          server.sendContent(", \"temperature\": " + String(f.temperature));
+          server.sendContent(", \"amount\": " + String(f.amount) + "}");
+          if (i != 9) server.sendContent(",");
       }
-      client.write("]}");
+      server.sendContent("]}");
   });
 
   server.on("/temperatures", [](){
