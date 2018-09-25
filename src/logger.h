@@ -4,7 +4,8 @@
 #ifndef __LOGGER__
 #define __LOGGER__
 
-#define CHECK_BYTE 0xA1
+#define CHECK_BYTE  0xA1
+#define MAX_HISTORY 255
 
 struct Settings {
     uint8_t feedingScheme;
@@ -26,9 +27,9 @@ struct Temperature {
 struct DataStruct {
     Settings settings;
     uint8_t latestFeeding;
-    Feeding feedings[255];
+    Feeding feedings[MAX_HISTORY];
     uint8_t latestTemperature;
-    Temperature temperatures[255];
+    Temperature temperatures[MAX_HISTORY];
 };
 
 class Logger {

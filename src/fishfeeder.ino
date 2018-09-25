@@ -38,7 +38,7 @@ void setup() {
     Serial.println("Starting fish feeder");
 
     if (!rtc.begin()) {
-        Serial.println("Couldn't find RTC");
+        Serial.println("Couldn't find RTC, stopping.");
         while (1);
     }
 
@@ -54,6 +54,7 @@ void setup() {
     tempLogTimer.start();
     debugTimer.start();
     logger.start();
+    feeder.start();
 
     logger.logTemperature(rtc.now().unixtime(), temperature());
 
@@ -137,11 +138,34 @@ void handleWebsite() {
   dnsServer.start(DNS_PORT, "*", apIP); // captive portal
 
   server.on("/monitor", [](){
-      server.send(200, "text/plain", parseTemplate(FPSTR(MONITOR_JSON)));
+      server.send(200, "application/json", 
+        "{ \"time\": \"" + getTime() + "\"," +
+        "  \"temperature\": " + String(temperature()) + " }");
+  });
+
+  server.on("/feedings", [](){
+      WiFiClient client = server.client();
+      client.write("Content-Type: application/json");
+      client.write("{ \"lastFeedings\": [");
+      // TODO - implement circular buffer with check for valid timestamp
+      for (int i=0; i < 10; i++) {
+          Feeding f = logger.getData().feedings[i];
+          client.print("{ \"time\": " + String(f.timestamp));
+          client.print(", \"temperature\": " + String(f.temperature));
+          client.print(", \"amount\": " + String(f.amount) + "}");
+          if (i != 9) client.write(",");
+          client.flush();
+      }
+      client.write("]}");
+  });
+
+  server.on("/temperatures", [](){
+      // TODO
+      server.send(200, "application/json", "[]");
   });
 
   server.on("/feed", [](){
-      server.send(200, "text/plain", "Done");
+      server.send(200, "text/plain", "Ok");
       feeder.feedNow();
   });
 
@@ -158,6 +182,7 @@ void handleWebsite() {
   });
 
   server.on("/set-time", []() {
+      server.send(200, "text/plain", "Ok");
       rtc.adjust(DateTime(
           server.arg("year").toInt(), 
           server.arg("month").toInt(), 
@@ -184,11 +209,4 @@ void handleWebsite() {
 
 void handleRoot() {
   server.send(200, "text/html", FPSTR(INDEX_HTML));
-}
-
-String parseTemplate(String str) {
-    str.replace("{{time}}", getTime());
-    str.replace("{{temperature}}", String(temperature()));
-    str.replace("{{lastFeedings}}", ""); // TODO - comma-separated list of times
-    return str;
 }

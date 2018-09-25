@@ -36,13 +36,20 @@ function updateMonitor() {
     makeRequest("/monitor", function() {
         var data = JSON.parse(this.response);
 
-        templates = ["temperature", "time", "feedings"]
+        templates = ["temperature", "time"]
         for (i in templates) {
             let id = templates[i]
             var template = document.getElementById("tpl_" + id).innerHTML;
             var out = Mark.up(template, data);
             document.getElementById(id).innerHTML = out;
         }
+    });
+
+    makeRequest("/feedings", function() {
+        var data = JSON.parse(this.response);
+        var template = document.getElementById("tpl_feedings").innerHTML;
+        var out = Mark.up(template, data);
+        document.getElementById("feedings").innerHTML = out;
     });
 }
 

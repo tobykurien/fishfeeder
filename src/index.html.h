@@ -2,14 +2,6 @@
 #ifndef __INDEX_HTML__
 #define __INDEX_HTML__
 
-const char MONITOR_JSON[] PROGMEM = R"=====(
-{
-    "time": "{{time}}",
-    "temperature": {{temperature}},
-    "lastFeedings": [ {{lastFeedings}} ]
-}
-)=====";
-
 const char INDEX_HTML[] PROGMEM = R"=====(
 <html>
 

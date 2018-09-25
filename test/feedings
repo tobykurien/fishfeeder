@@ -1,0 +1,19 @@
+{
+    "lastFeedings": [
+        {
+            "time": "2018/09/10 11h02",
+            "temperature": 20.5,
+            "amount": 1
+        },
+        {
+            "time": "2018/09/10 13h04",
+            "temperature": 24.5,
+            "amount": 1
+        },
+        {
+            "time": "2018/09/10 16h02",
+            "temperature": 26.5,
+            "amount": 1
+        }
+    ]
+}
