@@ -56,6 +56,8 @@ class Logger {
         
         // get data structures (logging, settings)
         DataStruct* getData();
+        Feeding* getLastFeeding();
+        Temperature* getLastTemperature();
 
         // time functions
         String getTime();

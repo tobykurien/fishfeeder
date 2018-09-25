@@ -12,9 +12,45 @@ void Feeder::start() {
 void Feeder::stop() {
 }
 
-int Feeder::checkAndFeed() {
-    // TODO - check feeding schedule and feed accordingly
-    return 0;
+// Check feeding schedule and feed accordingly
+void Feeder::checkAndFeed() {
+    Settings* s = logger->getSettings();
+
+    DateTime now = DateTime(logger->getCurrentTime());
+    // don't feed within the minimum feed times
+    if (logger->getLastFeeding()->timestamp - logger->getCurrentTime() > MIN_FEEDING_TIMEOUT) {
+        switch (s->feedingScheme) {
+            case 0: // auto
+                if (logger->getTemperature() >= 24.0) {
+                    // feed thrice a day
+                    if (now.hour() == 6) feedNow();
+                    else if (now.hour() == 13) feedNow();
+                    else if (now.hour() == 18) feedNow();
+                } else if (logger->getTemperature() >= 20) {
+                    // feed twice a day
+                    if (now.hour() == 11) feedNow();
+                    else if (now.hour() == 17) feedNow();
+                } else if (logger->getTemperature() >= 16) {
+                    // feed once a day
+                    if (now.hour() == 17) feedNow();
+                }
+                break;
+            case 1: // once a day
+                if (now.hour() == 17) feedNow();
+                break;
+            case 2: // twice a day
+                if (now.hour() == 11) feedNow();
+                else if (now.hour() == 17) feedNow();
+                break;
+            case 3: // thrice a day
+                if (now.hour() == 6) feedNow();
+                else if (now.hour() == 13) feedNow();
+                else if (now.hour() == 18) feedNow();
+                break;
+            default: // manual
+                break;
+        }
+    }
 }
 
 int Feeder::feedNow() {
@@ -36,6 +72,12 @@ int Feeder::dumpFood() {
     Feeding lastFeeding = logger->getData()->feedings[last];
     if (logger->getCurrentTime() - lastFeeding.timestamp < MIN_FEEDING_TIMEOUT) {
         return ERR_TOO_SOON;
+    }
+
+    // don't feed at night
+    DateTime now = DateTime(logger->getCurrentTime());
+    if (now.hour() < 5 || now.hour() > 20) {
+        return ERR_NIGHT_FEED;
     }
 
     logger->logFeeding(amount);

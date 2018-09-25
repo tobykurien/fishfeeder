@@ -150,13 +150,16 @@ void handleWebsite() {
   });
 
   server.on("/feed", [](){
+      server.send(200, "text/plain", String());
       int ret = feeder.feedNow();
       if (ret == ERR_AMOUNT_ZERO) {
-        server.send(200, "text/plain", "Error: Feeding disabled");
+        server.sendContent("Error: Feeding disabled");
       } else if (ret == ERR_TOO_SOON) {
-        server.send(200, "text/plain", "Error: Feeding too soon");
+        server.sendContent("Error: Feeding too soon");
+      } else if (ret == ERR_NIGHT_FEED) {
+        server.sendContent("Error: Feeding at night");
       } else {
-          server.send(200, "text/plain", "Ok");
+        server.sendContent("Ok");
       }
   });
 

@@ -8,6 +8,7 @@
 
 #define ERR_TOO_SOON    -1
 #define ERR_AMOUNT_ZERO -2
+#define ERR_NIGHT_FEED  -3
 
 class Feeder {
     public:
@@ -15,7 +16,7 @@ class Feeder {
         void start();
         void stop();
 
-        int checkAndFeed();
+        void checkAndFeed();
         int feedNow();
 
     private:

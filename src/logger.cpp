@@ -118,3 +118,10 @@ float Logger::getTemperature() {
     return reading / 10.0;
 }
 
+Feeding* Logger::getLastFeeding() {
+    return &(logData.feedings[logData.latestFeeding]);
+}
+
+Temperature* Logger::getLastTemperature() {
+    return &(logData.temperatures[logData.latestTemperature]);
+}
