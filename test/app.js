@@ -1,6 +1,22 @@
 
 function onSaveSettings(button) {
-    alert('TODO');
+    let form = document.forms[0];
+
+    let days = 0;
+    for (let i=0; i < 7; i++) {
+        if (form.days[i].checked) {
+            days |= 1 << i;
+        }
+    }
+
+    let params = "scheme=" + form.scheme.selectedOptions[0].value +
+        "&days=" + days +
+        "&amount=" + form.amount.selectedOptions[0].value;
+
+    console.log(params);
+    makeRequest("/saveSettings?" + params, function() {
+        toast(this.responseText);
+    });    
 }
 
 function onFeed() {
@@ -64,3 +80,26 @@ makeRequest("/temperatures", function() {
     document.getElementById("temperatures").innerHTML = out;
 });
 
+makeRequest("/getSettings", function() {
+    var data = JSON.parse(this.response);
+    console.log(data);
+    let form = document.forms[0];
+
+    for (opt in form.scheme.options) {
+        let option = form.scheme.options[opt];
+        if (option.value == data.scheme) {
+            option.selected = true;
+        }
+    }
+    
+    for (let i=0; i < 7; i++) {
+        form.days[i].checked = data.days >> i & 1;
+    }
+
+    for (opt in form.amount.options) {
+        let option = form.amount.options[opt];
+        if (option.value == data.amount) {
+            option.selected = true;
+        }
+    }
+});

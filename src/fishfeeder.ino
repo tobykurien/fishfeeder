@@ -37,7 +37,7 @@ void setup() {
 
     feedTimer.start();
     tempLogTimer.start();
-    //debugTimer.start();
+    debugTimer.start();
     logger.start();
     feeder.start();
 
@@ -142,8 +142,14 @@ void handleWebsite() {
   });
 
   server.on("/feed", [](){
-      server.send(200, "text/plain", "Ok");
-      feeder.feedNow();
+      int ret = feeder.feedNow();
+      if (ret == ERR_AMOUNT_ZERO) {
+        server.send(200, "text/plain", "Error: Feeding disabled");
+      } else if (ret == ERR_TOO_SOON) {
+        server.send(200, "text/plain", "Error: Feeding too soon");
+      } else {
+          server.send(200, "text/plain", "Ok");
+      }
   });
 
   server.on("/app.js", [](){

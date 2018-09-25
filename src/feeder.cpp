@@ -17,14 +17,14 @@ int Feeder::checkAndFeed() {
     return 0;
 }
 
-void Feeder::feedNow() {
-    dumpFood();
+int Feeder::feedNow() {
+    return dumpFood();
 }
 
-void Feeder::dumpFood() {
+int Feeder::dumpFood() {
     int amount = logger->getSettings()->feedingAmount;
     if (amount <= 0) {
-        return;
+        return ERR_AMOUNT_ZERO;
     }
 
     if (amount > 5) {
@@ -35,8 +35,7 @@ void Feeder::dumpFood() {
     int last = logger->getData()->latestFeeding;
     Feeding lastFeeding = logger->getData()->feedings[last];
     if (logger->getCurrentTime() - lastFeeding.timestamp < MIN_FEEDING_TIMEOUT) {
-        Serial.println("Too soon");
-        return;
+        return ERR_TOO_SOON;
     }
 
     logger->logFeeding(amount);
@@ -64,4 +63,6 @@ void Feeder::dumpFood() {
     // shutdown the servo
     servo.detach();
     digitalWrite(SERVO_POWER, LOW);
+
+    return amount;
 }

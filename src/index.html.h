@@ -42,7 +42,7 @@ const char INDEX_HTML[] PROGMEM = R"=====(
     <div class="container">
 
         <p style="display: flex; justify-content: center">
-            <b>Fish Feeder v1.0</b>
+            <b>Fish Feeder v2.0</b>
         </p>
 
         <div class="cards">
@@ -73,20 +73,29 @@ const char INDEX_HTML[] PROGMEM = R"=====(
                 <div class="card-body">
                     <p>
                         <b>Feeding scheme:</b><br />
-                        <select onchange="onSchemeChanged(this)">
-                            <option>Auto</option>
-                            <option>Once a day</option>
-                            <option>Twice a day</option>
-                            <option>Thrice a day</option>
-                            <option>Once a week</option>
-                            <option>Twice a week</option>
-                            <option>Thrice a week</option>
+                        <select name="scheme">
+                            <option value="0">Auto</option>
+                            <option value="1">Once a day</option>
+                            <option value="2">Twice a day</option>
+                            <option value="3">Thrice a day</option>
+                            <option value="10">Never</option>
                         </select>
                     </p>
 
                     <p>
+                        <b>Feeding days:</b><br />
+                        <input type="checkbox" name="days" value="0"/> Sunday<br/>
+                        <input type="checkbox" name="days" value="1"/> Monday<br/>
+                        <input type="checkbox" name="days" value="2"/> Tuesday<br/>
+                        <input type="checkbox" name="days" value="3"/> Wednesday<br/>
+                        <input type="checkbox" name="days" value="4"/> Thursday<br/>
+                        <input type="checkbox" name="days" value="5"/> Friday<br/>
+                        <input type="checkbox" name="days" value="6"/> Saturday<br/>
+                    </p>
+
+                    <p>
                         <b>Feed amount:</b><br />
-                        <select onchange="onDumpsChanged(this)">
+                        <select name="amount">
                             <option>One</option>
                             <option>Two</option>
                             <option>Three</option>
@@ -96,7 +105,8 @@ const char INDEX_HTML[] PROGMEM = R"=====(
                     </p>
                 </div>
                 <div class="card-footer">
-                    <button onclick="onFeed()" class="btn btn-primary">Feed now</button>
+                    <button onclick="onFeed()" class="btn btn-secondary">Feed now</button>
+                    <button onclick="onSaveSettings()" class="btn btn-primary">Apply Settings</button>
                 </div>
             </div>
         </div>
@@ -108,7 +118,7 @@ const char INDEX_HTML[] PROGMEM = R"=====(
                 <tr>
                     <th>Time</th>
                     <th>Water °C</th>
-                    <th>Feeds</th>
+                    <th>Amount</th>
                 </tr>
             </thead>
             <tbody id="feedings"></tbody>

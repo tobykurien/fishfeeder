@@ -6,6 +6,9 @@
 #ifndef __FEEDER__
 #define __FEEDER__
 
+#define ERR_TOO_SOON    -1
+#define ERR_AMOUNT_ZERO -2
+
 class Feeder {
     public:
         Feeder(Logger* logger);
@@ -13,12 +16,12 @@ class Feeder {
         void stop();
 
         int checkAndFeed();
-        void feedNow();
+        int feedNow();
 
     private:
         Logger* logger;
         Servo servo;
-        void dumpFood();
+        int dumpFood();
 };
 
 #endif

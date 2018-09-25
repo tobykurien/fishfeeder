@@ -37,7 +37,7 @@
     <div class="container">
 
         <p style="display: flex; justify-content: center">
-            <b>Fish Feeder v1.0</b>
+            <b>Fish Feeder v2.0</b>
         </p>
 
         <div class="cards">
@@ -66,6 +66,7 @@
                     <div class="card-title h5">Configuration</div>
                 </div>
                 <div class="card-body">
+                    <form name="settingsForm">
                     <p>
                         <b>Feeding scheme:</b><br />
                         <select name="scheme">
@@ -73,7 +74,7 @@
                             <option value="1">Once a day</option>
                             <option value="2">Twice a day</option>
                             <option value="3">Thrice a day</option>
-                            <option value="10">Never</option>
+                            <option value="10">Manual feeding</option>
                         </select>
                     </p>
 
@@ -91,17 +92,19 @@
                     <p>
                         <b>Feed amount:</b><br />
                         <select name="amount">
-                            <option>One</option>
-                            <option>Two</option>
-                            <option>Three</option>
-                            <option>Four</option>
-                            <option>Five</option>
+                            <option value="0">Feeding disabled</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                            <option value="4">Four</option>
+                            <option value="5">Five</option>
                         </select>
                     </p>
+                    </form>
                 </div>
                 <div class="card-footer">
-                    <button onclick="onFeed()" class="btn btn-secondary">Feed now</button>
-                    <button onclick="onSaveSettings()" class="btn btn-primary">Apply Settings</button>
+                    <button onclick="onFeed(this)" class="btn btn-secondary">Feed now</button>
+                    <button onclick="onSaveSettings(this)" class="btn btn-primary">Apply Settings</button>
                 </div>
             </div>
         </div>
