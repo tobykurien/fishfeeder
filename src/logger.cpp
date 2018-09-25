@@ -47,6 +47,10 @@ void Logger::writeLogData() {
     Serial.println(logData.temperatures[1].temperature);
 }
 
+Settings* Logger::getSettings() {
+    return &(logData.settings);
+}
+
 void Logger::stop() {
     EEPROM.end();
 }

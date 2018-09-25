@@ -6,7 +6,7 @@
 #ifndef __LOGGER__
 #define __LOGGER__
 
-#define CHECK_BYTE  0xA1
+#define CHECK_BYTE  0xA2    // update this if data structures change
 
 // Number of logs to keep for feedings and temperature
 // NOTE: current code relies on byte wrap-around to implement
@@ -17,6 +17,7 @@
 struct Settings {
     uint8_t feedingScheme;
     uint8_t feedingAmount;
+    uint8_t feedingDays; // each bit from lowest = day of week
 };
 
 struct Feeding {
@@ -45,12 +46,15 @@ class Logger {
         void start();
         void stop();
 
+        // logging
         void logFeeding(byte amount);
         void logTemperature();
 
+        // settings
         void saveSettings(byte feedingScheme, byte feedingAmount);
-        Settings getSettings();
+        Settings* getSettings();
         
+        // get data structures (logging, settings)
         DataStruct* getData();
 
         // time functions
@@ -59,6 +63,7 @@ class Logger {
         uint32_t getCurrentTime();
         void setTime(DateTime time);
 
+        // temperature
         float getTemperature();
 
     private:

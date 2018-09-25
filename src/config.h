@@ -16,9 +16,8 @@
 #define WIFI_TIMEOUT_MS 30000
 
 // Misc
-// char daysOfTheWeek[7][12] = {
-//     "Sunday", "Monday", "Tuesday", "Wednesday", 
-//     "Thursday", "Friday", "Saturday"
-// };
+
+// minimum time between feedings (for safety)
+#define MIN_FEEDING_TIMEOUT 3*60*60*1000 // milliseconds
 
 #endif

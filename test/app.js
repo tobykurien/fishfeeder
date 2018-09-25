@@ -1,8 +1,5 @@
-function onDumpsChanged(selectList) {
-    alert('TODO');
-}
 
-function onSchemeChanged(selectList) {
+function onSaveSettings(button) {
     alert('TODO');
 }
 

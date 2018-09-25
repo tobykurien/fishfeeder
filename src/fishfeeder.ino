@@ -37,7 +37,7 @@ void setup() {
 
     feedTimer.start();
     tempLogTimer.start();
-    debugTimer.start();
+    //debugTimer.start();
     logger.start();
     feeder.start();
 
@@ -48,11 +48,7 @@ void setup() {
 
 void loop() {
     if (feedTimer.done()) {
-        int amount = feeder.checkAndFeed();
-        if (amount > 0) {
-            // log the feeding event
-            logger.logFeeding(amount);
-        }
+        feeder.checkAndFeed();
     }
 
     if (tempLogTimer.done()) {
