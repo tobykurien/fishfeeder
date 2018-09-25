@@ -102,6 +102,14 @@ void handleWebsite() {
         "  \"temperature\": " + String(logger.getTemperature()) + " }");
   });
 
+  server.on("/get-settings", [](){
+      Settings* settings = logger.getSettings();
+      server.send(200, "application/json", 
+        "{ \"scheme\": " + String(settings->feedingScheme) + "," +
+        "  \"days\": " + String(settings->feedingDays) + "," +
+        "  \"amount\": " + String(settings->feedingAmount) + " }");
+  });
+
   server.on("/feedings", [](){
       server.setContentLength(CONTENT_LENGTH_UNKNOWN);
       server.send(200, "application/json", String());
@@ -173,6 +181,15 @@ void handleWebsite() {
           server.arg("hour").toInt(), 
           server.arg("minute").toInt(), 
           server.arg("second").toInt()));
+  });
+
+  server.on("/save-settings", [](){
+      Settings* settings = logger.getSettings();
+      settings->feedingScheme = server.arg("scheme").toInt();
+      settings->feedingDays = server.arg("days").toInt();
+      settings->feedingAmount = server.arg("amount").toInt();
+      logger.saveSettings();
+      server.send(200, "text/plain", "Ok");
   });
 
   server.on("/", handleRoot);

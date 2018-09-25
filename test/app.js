@@ -13,8 +13,7 @@ function onSaveSettings(button) {
         "&days=" + days +
         "&amount=" + form.amount.selectedOptions[0].value;
 
-    console.log(params);
-    makeRequest("/saveSettings?" + params, function() {
+    makeRequest("/save-settings?" + params, function() {
         toast(this.responseText);
     });    
 }
@@ -80,9 +79,8 @@ makeRequest("/temperatures", function() {
     document.getElementById("temperatures").innerHTML = out;
 });
 
-makeRequest("/getSettings", function() {
+makeRequest("/get-settings", function() {
     var data = JSON.parse(this.response);
-    console.log(data);
     let form = document.forms[0];
 
     for (opt in form.scheme.options) {

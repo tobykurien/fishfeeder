@@ -71,6 +71,7 @@ const char INDEX_HTML[] PROGMEM = R"=====(
                     <div class="card-title h5">Configuration</div>
                 </div>
                 <div class="card-body">
+                    <form name="settingsForm">
                     <p>
                         <b>Feeding scheme:</b><br />
                         <select name="scheme">
@@ -78,7 +79,7 @@ const char INDEX_HTML[] PROGMEM = R"=====(
                             <option value="1">Once a day</option>
                             <option value="2">Twice a day</option>
                             <option value="3">Thrice a day</option>
-                            <option value="10">Never</option>
+                            <option value="10">Manual feeding</option>
                         </select>
                     </p>
 
@@ -96,17 +97,19 @@ const char INDEX_HTML[] PROGMEM = R"=====(
                     <p>
                         <b>Feed amount:</b><br />
                         <select name="amount">
-                            <option>One</option>
-                            <option>Two</option>
-                            <option>Three</option>
-                            <option>Four</option>
-                            <option>Five</option>
+                            <option value="0">Feeding disabled</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                            <option value="4">Four</option>
+                            <option value="5">Five</option>
                         </select>
                     </p>
+                    </form>
                 </div>
                 <div class="card-footer">
-                    <button onclick="onFeed()" class="btn btn-secondary">Feed now</button>
-                    <button onclick="onSaveSettings()" class="btn btn-primary">Apply Settings</button>
+                    <button onclick="onFeed(this)" class="btn btn-secondary">Feed now</button>
+                    <button onclick="onSaveSettings(this)" class="btn btn-primary">Apply Settings</button>
                 </div>
             </div>
         </div>
@@ -144,12 +147,23 @@ const char INDEX_HTML[] PROGMEM = R"=====(
 )=====";
 
 const char APP_JS[] PROGMEM = R"=====(
-function onDumpsChanged(selectList) {
-    alert('TODO');
-}
+function onSaveSettings(button) {
+    let form = document.forms[0];
 
-function onSchemeChanged(selectList) {
-    alert('TODO');
+    let days = 0;
+    for (let i=0; i < 7; i++) {
+        if (form.days[i].checked) {
+            days |= 1 << i;
+        }
+    }
+
+    let params = "scheme=" + form.scheme.selectedOptions[0].value +
+        "&days=" + days +
+        "&amount=" + form.amount.selectedOptions[0].value;
+
+    makeRequest("/save-settings?" + params, function() {
+        toast(this.responseText);
+    });    
 }
 
 function onFeed() {
@@ -211,6 +225,29 @@ makeRequest("/temperatures", function() {
     var template = document.getElementById("tpl_temperatures").innerHTML;
     var out = Mark.up(template, data);
     document.getElementById("temperatures").innerHTML = out;
+});
+
+makeRequest("/get-settings", function() {
+    var data = JSON.parse(this.response);
+    let form = document.forms[0];
+
+    for (opt in form.scheme.options) {
+        let option = form.scheme.options[opt];
+        if (option.value == data.scheme) {
+            option.selected = true;
+        }
+    }
+    
+    for (let i=0; i < 7; i++) {
+        form.days[i].checked = data.days >> i & 1;
+    }
+
+    for (opt in form.amount.options) {
+        let option = form.amount.options[opt];
+        if (option.value == data.amount) {
+            option.selected = true;
+        }
+    }
 });
 )=====";
 

@@ -51,6 +51,10 @@ Settings* Logger::getSettings() {
     return &(logData.settings);
 }
 
+void Logger::saveSettings() {
+    writeLogData();
+}
+
 void Logger::stop() {
     EEPROM.end();
 }

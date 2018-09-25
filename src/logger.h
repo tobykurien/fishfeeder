@@ -51,7 +51,7 @@ class Logger {
         void logTemperature();
 
         // settings
-        void saveSettings(byte feedingScheme, byte feedingAmount);
+        void saveSettings();
         Settings* getSettings();
         
         // get data structures (logging, settings)
