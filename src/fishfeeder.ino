@@ -153,6 +153,7 @@ void handleWebsite() {
   });
 
   server.on("/feed", [](){
+      server.setContentLength(CONTENT_LENGTH_UNKNOWN);
       server.send(200, "text/plain", String());
       int ret = feeder.feedNow();
       if (ret == ERR_AMOUNT_ZERO) {
