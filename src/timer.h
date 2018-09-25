@@ -10,6 +10,7 @@ class Timer {
         bool timeElapsed(unsigned long timeoutMillis);
         void reset();
         bool done();
+        void stop();
 
     private:
         unsigned long startTime = 0;

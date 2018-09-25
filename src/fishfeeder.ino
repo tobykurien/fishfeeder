@@ -56,7 +56,10 @@ void loop() {
     }
 
     if (debugTimer.done()) {
+        DateTime now = DateTime(logger.getCurrentTime());
         Serial.print(logger.getTime());
+        Serial.print("\t");
+        Serial.print(now.dayOfTheWeek());
         Serial.print("\t");
         Serial.print(logger.getTemperature());
         Serial.println("°C");

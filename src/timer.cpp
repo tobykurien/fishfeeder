@@ -8,11 +8,17 @@ void Timer::start() {
     startTime = millis();
 }
 
+void Timer::stop() {
+    startTime = 0;
+}
+
 void Timer::reset() {
     start();
 }
 
 bool Timer::done(){
+    if (startTime == 0) return false;
+
     if (timeElapsed(interval)) {
         reset();
         return true;
@@ -22,5 +28,6 @@ bool Timer::done(){
 }
 
 bool Timer::timeElapsed(unsigned long timeoutMillis) {
+    if (startTime == 0) return false;
     return (millis() - startTime) >= timeoutMillis;
 }

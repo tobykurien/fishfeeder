@@ -17,8 +17,10 @@ void Feeder::checkAndFeed() {
     Settings* s = logger->getSettings();
 
     DateTime now = DateTime(logger->getCurrentTime());
+
     // don't feed within the minimum feed times
-    if (logger->getLastFeeding()->timestamp - logger->getCurrentTime() > MIN_FEEDING_TIMEOUT) {
+    if (logger->getLastFeeding()->timestamp - logger->getCurrentTime() > MIN_FEEDING_TIMEOUT &&
+        (s->feedingDays >> now.dayOfTheWeek() & 1) == 1) {
         switch (s->feedingScheme) {
             case 0: // auto
                 if (logger->getTemperature() >= 24.0) {
