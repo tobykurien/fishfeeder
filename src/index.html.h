@@ -26,9 +26,17 @@ const char INDEX_HTML[] PROGMEM = R"=====(
         <tr>
             <td>{{time}}</td>
             <td>{{temperature}}</td>
-            <td>{{feeds}}</td>
+            <td>{{amount}}</td>
         </tr>
         {{/lastFeedings}}            
+    </script>
+    <script type="text/template" id="tpl_temperatures">
+        {{temperatures}}
+        <tr>
+            <td>{{time}}</td>
+            <td>{{temperature}}</td>
+        </tr>
+        {{/temperatures}}            
     </script>
 
     <div class="container">
@@ -63,17 +71,17 @@ const char INDEX_HTML[] PROGMEM = R"=====(
                     <div class="card-title h5">Configuration</div>
                 </div>
                 <div class="card-body">
-
-                    <b>Feeding scheme:</b><br />
-                    <select onchange="onSchemeChanged(this)">
-                        <option>Auto</option>
-                        <option>Once a week</option>
-                        <option>Twice a week</option>
-                        <option>Thrice a week</option>
-                        <option>Once a day</option>
-                        <option>Twice a day</option>
-                        <option>Thrice a day</option>
-                    </select>
+                    <p>
+                        <b>Feeding scheme:</b><br />
+                        <select onchange="onSchemeChanged(this)">
+                            <option>Auto</option>
+                            <option>Once a day</option>
+                            <option>Twice a day</option>
+                            <option>Thrice a day</option>
+                            <option>Once a week</option>
+                            <option>Twice a week</option>
+                            <option>Thrice a week</option>
+                        </select>
                     </p>
 
                     <p>
@@ -85,6 +93,7 @@ const char INDEX_HTML[] PROGMEM = R"=====(
                             <option>Four</option>
                             <option>Five</option>
                         </select>
+                    </p>
                 </div>
                 <div class="card-footer">
                     <button onclick="onFeed()" class="btn btn-primary">Feed now</button>
@@ -103,6 +112,18 @@ const char INDEX_HTML[] PROGMEM = R"=====(
                 </tr>
             </thead>
             <tbody id="feedings"></tbody>
+        </table>
+
+        <p></p>
+
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Water °C</th>
+                </tr>
+            </thead>
+            <tbody id="temperatures"></tbody>
         </table>
     </div>
 
@@ -151,7 +172,7 @@ function updateMonitor() {
     makeRequest("/monitor", function() {
         var data = JSON.parse(this.response);
 
-        templates = ["temperature", "time", "feedings"]
+        templates = ["temperature", "time"]
         for (i in templates) {
             let id = templates[i]
             var template = document.getElementById("tpl_" + id).innerHTML;
@@ -167,6 +188,20 @@ function toast(message) {
 }
 
 setInterval(updateMonitor, 1000);
+
+makeRequest("/feedings", function() {
+    var data = JSON.parse(this.response);
+    var template = document.getElementById("tpl_feedings").innerHTML;
+    var out = Mark.up(template, data);
+    document.getElementById("feedings").innerHTML = out;
+});
+
+makeRequest("/temperatures", function() {
+    var data = JSON.parse(this.response);
+    var template = document.getElementById("tpl_temperatures").innerHTML;
+    var out = Mark.up(template, data);
+    document.getElementById("temperatures").innerHTML = out;
+});
 )=====";
 
 #endif

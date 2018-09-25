@@ -44,13 +44,6 @@ function updateMonitor() {
             document.getElementById(id).innerHTML = out;
         }
     });
-
-    makeRequest("/feedings", function() {
-        var data = JSON.parse(this.response);
-        var template = document.getElementById("tpl_feedings").innerHTML;
-        var out = Mark.up(template, data);
-        document.getElementById("feedings").innerHTML = out;
-    });
 }
 
 function toast(message) {
@@ -59,3 +52,18 @@ function toast(message) {
 }
 
 setInterval(updateMonitor, 1000);
+
+makeRequest("/feedings", function() {
+    var data = JSON.parse(this.response);
+    var template = document.getElementById("tpl_feedings").innerHTML;
+    var out = Mark.up(template, data);
+    document.getElementById("feedings").innerHTML = out;
+});
+
+makeRequest("/temperatures", function() {
+    var data = JSON.parse(this.response);
+    var template = document.getElementById("tpl_temperatures").innerHTML;
+    var out = Mark.up(template, data);
+    document.getElementById("temperatures").innerHTML = out;
+});
+

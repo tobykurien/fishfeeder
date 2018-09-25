@@ -25,6 +25,14 @@
         </tr>
         {{/lastFeedings}}            
     </script>
+    <script type="text/template" id="tpl_temperatures">
+        {{temperatures}}
+        <tr>
+            <td>{{time}}</td>
+            <td>{{temperature}}</td>
+        </tr>
+        {{/temperatures}}            
+    </script>
 
     <div class="container">
 
@@ -99,6 +107,18 @@
                 </tr>
             </thead>
             <tbody id="feedings"></tbody>
+        </table>
+
+        <p></p>
+
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Water °C</th>
+                </tr>
+            </thead>
+            <tbody id="temperatures"></tbody>
         </table>
     </div>
 

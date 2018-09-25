@@ -1,0 +1,6 @@
+{ "temperatures": [
+    { "time": "2018/9/25 13:2:56", "temperature": -20.90},
+    { "time": "2018/9/25 13:0:32", "temperature": 25.30},
+    { "time": "2018/9/25 12:53:32", "temperature": 24.10},
+    { "time": "2018/9/25 12:44:30", "temperature": 23.40}
+]}

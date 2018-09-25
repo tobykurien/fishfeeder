@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <RTClib.h>
 
 #include <ESP8266WiFi.h>          //ESP8266 Core WiFi Library (you most likely already have this in your sketch)
 #include <DNSServer.h>            //Local DNS Server used for redirecting all requests to the configuration portal
@@ -12,9 +11,8 @@
 #include "logger.h"
 #include "feeder.h"
 
-RTC_DS3231 rtc;
 Logger logger;
-Feeder feeder;
+Feeder feeder = Feeder(&logger);
 
 const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
 IPAddress         apIP(10, 10, 10, 1);    // Private network for server
@@ -37,26 +35,13 @@ void setup() {
     Serial.begin(115200);
     Serial.println("Starting fish feeder");
 
-    if (!rtc.begin()) {
-        Serial.println("Couldn't find RTC, stopping.");
-        while (1);
-    }
-
-    if (rtc.lostPower()) {
-        Serial.println("RTC lost power, lets set the time!");
-        // following line sets the RTC to the date & time this sketch was compiled
-        //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-        // This line sets the RTC with an explicit date & time, for example to set
-        //rtc.adjust(DateTime(2018, 8, 28, 16, 16, 0));
-    }
-
     feedTimer.start();
     tempLogTimer.start();
     debugTimer.start();
     logger.start();
     feeder.start();
 
-    logger.logTemperature(rtc.now().unixtime(), temperature());
+    logger.logTemperature();
 
     startWifi();
 }
@@ -66,44 +51,22 @@ void loop() {
         int amount = feeder.checkAndFeed();
         if (amount > 0) {
             // log the feeding event
-            logger.logFeeding(rtc.now().unixtime(), amount, temperature());
+            logger.logFeeding(amount);
         }
     }
 
     if (tempLogTimer.done()) {
-        logger.logTemperature(rtc.now().unixtime(), temperature());
+        logger.logTemperature();
     }
 
     if (debugTimer.done()) {
-        Serial.print(getTime());
+        Serial.print(logger.getTime());
         Serial.print("\t");
-        Serial.print(temperature());
+        Serial.print(logger.getTemperature());
         Serial.println("°C");
     }
 
     delay(1000);
-}
-
-float temperature() {
-    digitalWrite(TEMP_POWER, HIGH);
-    delay(10);
-    int t = analogRead(TEMP_SENS);
-    digitalWrite(TEMP_POWER, LOW);
-
-    // calibrated to degrees celcius with thermometer
-    int reading = map(t*10, 4970, 7390, 270, 50);
-    return reading / 10.0;
-}
-
-String getTime() {
-    DateTime now = rtc.now();
-    
-    return String(now.year()) + '/' +
-        String(now.month()) + '/' +
-        String(now.day()) + ' ' +
-        String(now.hour()) + ':' +
-        String(now.minute()) + ':' +
-        String(now.second());
 }
 
 void startWifi() {
@@ -139,28 +102,47 @@ void handleWebsite() {
 
   server.on("/monitor", [](){
       server.send(200, "application/json", 
-        "{ \"time\": \"" + getTime() + "\"," +
-        "  \"temperature\": " + String(temperature()) + " }");
+        "{ \"time\": \"" + logger.getTime() + "\"," +
+        "  \"temperature\": " + String(logger.getTemperature()) + " }");
   });
 
   server.on("/feedings", [](){
       server.setContentLength(CONTENT_LENGTH_UNKNOWN);
       server.send(200, "application/json", String());
       server.sendContent("{ \"lastFeedings\": [");
-      // TODO - implement circular buffer with check for valid timestamp
-      for (int i=0; i < 10; i++) {
-          Feeding f = logger.getData()->feedings[i];
-          server.sendContent("{ \"time\": " + String(f.timestamp));
+
+      // Loop through data history and output valid ones
+      DataStruct* data = logger.getData();
+      bool addComma = false;
+      for (int i=data->latestFeeding; i != data->latestFeeding+1; i--) {
+          Feeding f = data->feedings[i];
+          if (f.timestamp == 0) break;
+          if (addComma) server.sendContent(",");
+          server.sendContent("{ \"time\": \"" + logger.getTime(f.timestamp) + "\"");
           server.sendContent(", \"temperature\": " + String(f.temperature));
           server.sendContent(", \"amount\": " + String(f.amount) + "}");
-          if (i != 9) server.sendContent(",");
+          addComma = true;
       }
       server.sendContent("]}");
   });
 
   server.on("/temperatures", [](){
-      // TODO
-      server.send(200, "application/json", "[]");
+      server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+      server.send(200, "application/json", String());
+      server.sendContent("{ \"temperatures\": [");
+
+      // Loop through data history and output valid ones
+      DataStruct* data = logger.getData();
+      bool addComma = false;
+      for (int i=data->latestTemperature; i != data->latestTemperature+1; i--) {
+          Temperature t = data->temperatures[i];
+          if (t.timestamp == 0) break;
+          if (addComma) server.sendContent(",");
+          server.sendContent("{ \"time\": \"" + logger.getTime(t.timestamp) + "\"");
+          server.sendContent(", \"temperature\": " + String(t.temperature) + "}");
+          addComma = true;
+      }
+      server.sendContent("]}");
   });
 
   server.on("/feed", [](){
@@ -182,7 +164,7 @@ void handleWebsite() {
 
   server.on("/set-time", []() {
       server.send(200, "text/plain", "Ok");
-      rtc.adjust(DateTime(
+      logger.setTime(DateTime(
           server.arg("year").toInt(), 
           server.arg("month").toInt(), 
           server.arg("day").toInt(), 

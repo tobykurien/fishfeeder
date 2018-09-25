@@ -1,6 +1,7 @@
 #include "feeder.h"
 
-Feeder::Feeder() {
+Feeder::Feeder(Logger* inLogger) {
+    logger = inLogger;
 }
 
 void Feeder::start() {
@@ -22,6 +23,7 @@ void Feeder::feedNow() {
 }
 
 void Feeder::dumpFood() {
+    logger->logFeeding(1);
     Serial.println("Dumping food");
 
     // start up servo

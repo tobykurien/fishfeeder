@@ -1,13 +1,14 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include "config.h"
+#include "logger.h"
 
 #ifndef __FEEDER__
 #define __FEEDER__
 
 class Feeder {
     public:
-        Feeder();
+        Feeder(Logger* logger);
         void start();
         void stop();
 
@@ -15,6 +16,7 @@ class Feeder {
         void feedNow();
 
     private:
+        Logger* logger;
         Servo servo;
         void dumpFood();
 };
