@@ -2,6 +2,8 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
+#define DEBUG       false
+
 // Hardware pins
 #define TEMP_SENS   A0
 #define TEMP_POWER  D8
@@ -18,6 +20,6 @@
 // Misc
 
 // minimum time between feedings (for safety)
-#define MIN_FEEDING_TIMEOUT 3*60*60*1000 // milliseconds
+#define MIN_FEEDING_TIMEOUT 3*60*60 // seconds
 
 #endif

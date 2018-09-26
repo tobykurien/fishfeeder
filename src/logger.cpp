@@ -24,27 +24,23 @@ void Logger::start() {
 
     if (EEPROM.read(0) == CHECK_BYTE) {
         // load previous data
-        for(size_t i = 1; i < sizeof(DataStruct); i++) {
+        for(size_t i = 1; i <= sizeof(DataStruct); i++) {
             char data = EEPROM.read(i);
-            ((char *)&logData)[i] = data;
+            ((char *)&logData)[i-1] = data;
         }
 
         Serial.println("Loaded log data:");
-        Serial.println(logData.latestTemperature);
-        Serial.println(logData.temperatures[1].temperature);
      }
 }
 
 void Logger::writeLogData() {
     EEPROM.write(0, CHECK_BYTE);
-    for(size_t i = 1; i < sizeof(DataStruct); i++) {
-        char data = ((char *)&logData)[i];
+    for(size_t i = 1; i <= sizeof(DataStruct); i++) {
+        char data = ((char *)&logData)[i-1];
         EEPROM.write(i, data);
     }
     EEPROM.commit();
     Serial.println("Wrote log data to EEPROM");    
-    Serial.println(logData.latestTemperature);
-    Serial.println(logData.temperatures[1].temperature);
 }
 
 Settings* Logger::getSettings() {
@@ -86,7 +82,7 @@ DataStruct* Logger::getData() {
 }
 
 String Logger::getTime() {
-    return getTime(rtc.now().unixtime());
+    return getTime(getCurrentTime());
 }
 
 String Logger::getTime(uint32_t time) {
@@ -100,7 +96,7 @@ String Logger::getTime(uint32_t time) {
 }
 
 uint32_t Logger::getCurrentTime() {
-    return rtc.now().unixtime();
+    return rtc.now().unixtime(); // + millis() // to speed up time
 }
 
 void Logger::setTime(DateTime time) {

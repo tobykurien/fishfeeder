@@ -6,7 +6,7 @@
 #ifndef __LOGGER__
 #define __LOGGER__
 
-#define CHECK_BYTE  0xA2    // update this if data structures change
+#define CHECK_BYTE  0xA3    // update this if data structures change
 
 // Number of logs to keep for feedings and temperature
 // NOTE: current code relies on byte wrap-around to implement

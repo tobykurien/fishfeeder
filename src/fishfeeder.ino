@@ -41,9 +41,7 @@ void setup() {
     logger.start();
     feeder.start();
 
-    logger.logTemperature();
-
-    startWifi();
+    if (!DEBUG) startWifi();
 }
 
 void loop() {
@@ -55,11 +53,9 @@ void loop() {
         logger.logTemperature();
     }
 
-    if (debugTimer.done()) {
+    if (DEBUG && debugTimer.done()) {
         DateTime now = DateTime(logger.getCurrentTime());
         Serial.print(logger.getTime());
-        Serial.print("\t");
-        Serial.print(now.dayOfTheWeek());
         Serial.print("\t");
         Serial.print(logger.getTemperature());
         Serial.println("°C");
