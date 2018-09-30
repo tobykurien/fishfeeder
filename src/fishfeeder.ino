@@ -1,92 +1,219 @@
 #include <Arduino.h>
-#include <Servo.h>
 
-#define SERVO   3
-#define LED     12
+#include <ESP8266WiFi.h>          //ESP8266 Core WiFi Library (you most likely already have this in your sketch)
+#include <DNSServer.h>            //Local DNS Server used for redirecting all requests to the configuration portal
+#include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
 
-unsigned long millisHour = 3600000; // adjust for clock drift. 3600000 in a perfect world.
-unsigned long startMillis = 0;
+#include "config.h"
+#include "index.html.h"
+#include "assets.h"
+#include "timer.h"
+#include "logger.h"
+#include "feeder.h"
 
-Servo servo;
+Logger logger;
+Feeder feeder = Feeder(&logger);
+
+const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
+IPAddress         apIP(10, 10, 10, 1);    // Private network for server
+DNSServer         dnsServer;              // Create the DNS object
+ESP8266WebServer  server(80);
+
+Timer             feedTimer(5*60*1000),     // how often to check feeding
+                  tempLogTimer(60*60*1000), // how often to log temperature
+                  debugTimer(1000);
 
 void setup() {
-    Serial.begin(9600);
+    pinMode(LED, OUTPUT);
+    pinMode(TEMP_POWER, OUTPUT);
+    pinMode(BUTTON, INPUT_PULLUP);
+   
+    digitalWrite(LED, HIGH);
+    digitalWrite(BUTTON, HIGH); // pull-up
+
+    Serial.println(ESP.getResetReason());
+    Serial.begin(115200);
     Serial.println("Starting fish feeder");
 
-    servo.attach(SERVO);
-    servo.write(0);
-    pinMode(LED, OUTPUT);
+    feedTimer.start();
+    tempLogTimer.start();
+    debugTimer.start();
+    logger.start();
+    feeder.start();
 
-    // start timing from now
-    startMillis = millis();
+    startWifi();
 }
 
 void loop() {
-    delayHours(24, startMillis);
+    if (feedTimer.done()) {
+        feeder.checkAndFeed();
+    }
 
-    // feed once a day for winter
-    startMillis = millis();
-    dumpFood();
+    if (tempLogTimer.done()) {
+        logger.logTemperature();
+    }
+
+    if (DEBUG && debugTimer.done()) {
+        DateTime now = DateTime(logger.getCurrentTime());
+        Serial.print(logger.getTime());
+        Serial.print("\t");
+        Serial.print(logger.getTemperature());
+        Serial.println("°C");
+    }
+
+    delay(1000);
 }
 
-void dumpFood() {
-    Serial.println("Dumping food");
-    servo.write(0);
-    delay(500);
-    servo.write(90);
-    delay(500);
-    servo.write(180);
-    delay(500);
-    servo.write(90);
-    delay(500);
-    servo.write(0);
+void startWifi() {
+    Serial.print("Setting soft-AP ... ");
+    WiFi.mode(WIFI_AP);
+    WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+    boolean result = WiFi.softAP(WIFI_SSID, WIFI_PASS);
 
-    delay(10000);
+    if(result == true) {
+        Serial.println("Ready");
+    } else {
+        Serial.println("Failed!");
+    }
 
-    servo.write(0);
-    delay(500);
-    servo.write(90);
-    delay(500);
-    servo.write(180);
-    delay(500);
-    servo.write(90);
-    delay(500);
-    servo.write(0);
+    long startTime = millis();
+    while (WiFi.softAPgetStationNum() == 0 
+            && (millis() - startTime) < WIFI_TIMEOUT_MS) {
+        digitalWrite(LED, HIGH);
+        delay(100);
+        digitalWrite(LED, LOW);
+        delay(100);
+    }
+
+    handleWebsite();
+    digitalWrite(LED, HIGH);
+
+    // turn off wifi (https://github.com/esp8266/Arduino/issues/644)
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_OFF);
+    WiFi.forceSleepBegin();
+    delay(1);
+    Serial.println("SoftAP shut down");
 }
 
-void delayHours(unsigned int hours, unsigned long start) {
-    Serial.print("Delaying for hours ");
-    Serial.println(hours);
+void handleWebsite() {
+  dnsServer.start(DNS_PORT, "*", apIP); // captive portal
 
-    unsigned long totalMillis = hours * millisHour;
-    for (int hour=hours; hour > 0; hour--) {
-        Serial.print("Starting hour ");
-        Serial.println(hour);
+  server.on("/monitor", [](){
+      server.send(200, "application/json", 
+        "{ \"time\": \"" + logger.getTime() + "\"," +
+        "  \"temperature\": " + String(logger.getTemperature()) + " }");
+  });
 
-        while ((unsigned long)(millis() - start) < millisHour) {
-            if (hour > 5) {
-                delay(5000);
-            } else if (hour > 1) {
-                delay(1000 * hour);
-            } else {
-                if ((millis() - start) < 1800000) {
-                    // more than 30 mins to go
-                    delay(750);
-                } else if ((millis() - start) < 3000000) {
-                    // more than 10 minutes to go
-                    delay(500);
-                } else if ((millis() - start) < 3540000) {
-                    // more than 1 minute to go
-                    delay(250);
-                } else {
-                    delay(100);
-                }
-            }
+  server.on("/get-settings", [](){
+      Settings* settings = logger.getSettings();
+      server.send(200, "application/json", 
+        "{ \"scheme\": " + String(settings->feedingScheme) + "," +
+        "  \"days\": " + String(settings->feedingDays) + "," +
+        "  \"amount\": " + String(settings->feedingAmount) + " }");
+  });
 
-            digitalWrite(LED, HIGH);
-            delay(100);
-            digitalWrite(LED, LOW);
-        }
-    } 
+  server.on("/feedings", [](){
+      server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+      server.send(200, "application/json", String());
+      server.sendContent("{ \"lastFeedings\": [");
+
+      // Loop through data history and output valid ones
+      DataStruct* data = logger.getData();
+      bool addComma = false;
+      for (int i=data->latestFeeding; i != data->latestFeeding+1; i--) {
+          Feeding f = data->feedings[i];
+          if (f.timestamp == 0) break;
+          if (addComma) server.sendContent(",");
+          server.sendContent("{ \"time\": \"" + logger.getTime(f.timestamp) + "\"");
+          server.sendContent(", \"temperature\": " + String(f.temperature));
+          server.sendContent(", \"amount\": " + String(f.amount) + "}");
+          addComma = true;
+      }
+      server.sendContent("]}");
+  });
+
+  server.on("/temperatures", [](){
+      server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+      server.send(200, "application/json", String());
+      server.sendContent("{ \"temperatures\": [");
+
+      // Loop through data history and output valid ones
+      DataStruct* data = logger.getData();
+      bool addComma = false;
+      for (int i=data->latestTemperature; i != data->latestTemperature+1; i--) {
+          Temperature t = data->temperatures[i];
+          if (t.timestamp == 0) break;
+          if (addComma) server.sendContent(",");
+          server.sendContent("{ \"time\": \"" + logger.getTime(t.timestamp) + "\"");
+          server.sendContent(", \"temperature\": " + String(t.temperature) + "}");
+          addComma = true;
+      }
+      server.sendContent("]}");
+  });
+
+  server.on("/feed", [](){
+      server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+      server.send(200, "text/plain", String());
+      int ret = feeder.feedNow();
+      if (ret == ERR_AMOUNT_ZERO) {
+        server.sendContent("Error: Feeding disabled");
+      } else if (ret == ERR_TOO_SOON) {
+        server.sendContent("Error: Feeding too soon");
+      } else if (ret == ERR_NIGHT_FEED) {
+        server.sendContent("Error: Feeding at night");
+      } else {
+        server.sendContent("Ok");
+      }
+  });
+
+  server.on("/app.js", [](){
+      server.send(200, "text/javascript", FPSTR(APP_JS));
+  });
+
+  server.on("/app.css", [](){
+      server.send(200, "text/stylesheet", FPSTR(APP_CSS));
+  });
+
+  server.on("/markup.js", [](){
+      server.send(200, "text/javascript", FPSTR(MARKUP_JS));
+  });
+
+  server.on("/set-time", []() {
+      server.send(200, "text/plain", "Ok");
+      logger.setTime(DateTime(
+          server.arg("year").toInt(), 
+          server.arg("month").toInt(), 
+          server.arg("day").toInt(), 
+          server.arg("hour").toInt(), 
+          server.arg("minute").toInt(), 
+          server.arg("second").toInt()));
+  });
+
+  server.on("/save-settings", [](){
+      Settings* settings = logger.getSettings();
+      settings->feedingScheme = server.arg("scheme").toInt();
+      settings->feedingDays = server.arg("days").toInt();
+      settings->feedingAmount = server.arg("amount").toInt();
+      logger.saveSettings();
+      server.send(200, "text/plain", "Ok");
+  });
+
+  server.on("/", handleRoot);
+  server.onNotFound(handleRoot);
+
+  server.begin();
+  Serial.println("HTTP server started");
+
+  while (WiFi.softAPgetStationNum() != 0) {
+    dnsServer.processNextRequest();
+    server.handleClient(); 
+  } 
+
+  server.stop();
+  Serial.println("HTTP server stopped");
 }
 
+void handleRoot() {
+  server.send(200, "text/html", FPSTR(INDEX_HTML));
+}

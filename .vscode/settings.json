@@ -6,5 +6,19 @@
     "terminal.integrated.env.osx": {
         "PATH": "/Users/tobykurien/.platformio/penv/bin:/Users/tobykurien/.platformio/penv:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/MacGPG2/bin:/usr/local/git/bin",
         "PLATFORMIO_CALLER": "vscode"
+    },
+    "files.associations": {
+        "*.xtend": "groovy",
+        "array": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "initializer_list": "cpp",
+        "cmath": "cpp",
+        "functional": "cpp",
+        "istream": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
     }
 }

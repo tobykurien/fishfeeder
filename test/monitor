@@ -1,0 +1,9 @@
+{
+    "time": "2018/09/12 11:00:30",
+    "temperature": 12.50,
+    "lastFeedings": 
+        [ 
+            { "time": "2018/09/12 11:00", "temperature": 21.00, "feeds": 2 }, 
+            { "time": "2018/09/12 16:10", "temperature": 15.00, "feeds": 1 } 
+        ]
+}
