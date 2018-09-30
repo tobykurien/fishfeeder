@@ -25,7 +25,7 @@ void Feeder::checkAndFeed() {
             case 0: // auto
                 if (logger->getTemperature() >= 21.0) {
                     // feed thrice a day
-                    if (now.hour() == 6) feedNow();
+                    if (now.hour() == 8) feedNow();
                     else if (now.hour() == 13) feedNow();
                     else if (now.hour() == 18) feedNow();
                 } else if (logger->getTemperature() >= 18) {

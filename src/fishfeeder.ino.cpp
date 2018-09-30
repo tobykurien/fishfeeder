@@ -1,8 +1,11 @@
+# 1 "/var/folders/cw/p_bjsb5126x2c87y9zzw05180000gn/T/tmpsK1Y0c"
+#include <Arduino.h>
+# 1 "/Users/tobykurien/Projects/fishfeeder/src/fishfeeder.ino"
 #include <Arduino.h>
 
-#include <ESP8266WiFi.h>          //ESP8266 Core WiFi Library (you most likely already have this in your sketch)
-#include <DNSServer.h>            //Local DNS Server used for redirecting all requests to the configuration portal
-#include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
+#include <ESP8266WiFi.h>
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
 
 #include "config.h"
 #include "index.html.h"
@@ -14,22 +17,27 @@
 Logger logger;
 Feeder feeder = Feeder(&logger);
 
-const byte        DNS_PORT = 53;          // Capture DNS requests on port 53
-IPAddress         apIP(10, 10, 10, 1);    // Private network for server
-DNSServer         dnsServer;              // Create the DNS object
-ESP8266WebServer  server(80);
+const byte DNS_PORT = 53;
+IPAddress apIP(10, 10, 10, 1);
+DNSServer dnsServer;
+ESP8266WebServer server(80);
 
-Timer             feedTimer(5*60*1000),     // how often to check feeding
-                  tempLogTimer(60*60*1000), // how often to log temperature
+Timer feedTimer(5*60*1000),
+                  tempLogTimer(60*60*1000),
                   debugTimer(1000);
-
+void setup();
+void loop();
+void startWifi();
+void handleWebsite();
+void handleRoot();
+#line 26 "/Users/tobykurien/Projects/fishfeeder/src/fishfeeder.ino"
 void setup() {
     pinMode(LED, OUTPUT);
     pinMode(TEMP_POWER, OUTPUT);
     pinMode(BUTTON, INPUT_PULLUP);
-   
+
     digitalWrite(LED, HIGH);
-    digitalWrite(BUTTON, HIGH); // pull-up
+    digitalWrite(BUTTON, HIGH);
 
     Serial.println(ESP.getResetReason());
     Serial.begin(115200);
@@ -77,7 +85,7 @@ void startWifi() {
     }
 
     long startTime = millis();
-    while (WiFi.softAPgetStationNum() == 0 
+    while (WiFi.softAPgetStationNum() == 0
             && (millis() - startTime) < WIFI_TIMEOUT_MS) {
         digitalWrite(LED, HIGH);
         delay(100);
@@ -88,7 +96,7 @@ void startWifi() {
     handleWebsite();
     digitalWrite(LED, HIGH);
 
-    // turn off wifi (https://github.com/esp8266/Arduino/issues/644)
+
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
     WiFi.forceSleepBegin();
@@ -97,17 +105,17 @@ void startWifi() {
 }
 
 void handleWebsite() {
-  dnsServer.start(DNS_PORT, "*", apIP); // captive portal
+  dnsServer.start(DNS_PORT, "*", apIP);
 
   server.on("/monitor", [](){
-      server.send(200, "application/json", 
+      server.send(200, "application/json",
         "{ \"time\": \"" + logger.getTime() + "\"," +
         "  \"temperature\": " + String(logger.getTemperature()) + " }");
   });
 
   server.on("/get-settings", [](){
       Settings* settings = logger.getSettings();
-      server.send(200, "application/json", 
+      server.send(200, "application/json",
         "{ \"scheme\": " + String(settings->feedingScheme) + "," +
         "  \"days\": " + String(settings->feedingDays) + "," +
         "  \"amount\": " + String(settings->feedingAmount) + " }");
@@ -118,7 +126,7 @@ void handleWebsite() {
       server.send(200, "application/json", String());
       server.sendContent("{ \"lastFeedings\": [");
 
-      // Loop through data history and output valid ones
+
       DataStruct* data = logger.getData();
       bool addComma = false;
       for (int i=data->latestFeeding; i != data->latestFeeding+1; i--) {
@@ -138,7 +146,7 @@ void handleWebsite() {
       server.send(200, "application/json", String());
       server.sendContent("{ \"temperatures\": [");
 
-      // Loop through data history and output valid ones
+
       DataStruct* data = logger.getData();
       bool addComma = false;
       for (int i=data->latestTemperature; i != data->latestTemperature+1; i--) {
@@ -182,11 +190,11 @@ void handleWebsite() {
   server.on("/set-time", []() {
       server.send(200, "text/plain", "Ok");
       logger.setTime(DateTime(
-          server.arg("year").toInt(), 
-          server.arg("month").toInt(), 
-          server.arg("day").toInt(), 
-          server.arg("hour").toInt(), 
-          server.arg("minute").toInt(), 
+          server.arg("year").toInt(),
+          server.arg("month").toInt(),
+          server.arg("day").toInt(),
+          server.arg("hour").toInt(),
+          server.arg("minute").toInt(),
           server.arg("second").toInt()));
   });
 
@@ -207,8 +215,8 @@ void handleWebsite() {
 
   while (WiFi.softAPgetStationNum() != 0) {
     dnsServer.processNextRequest();
-    server.handleClient(); 
-  } 
+    server.handleClient();
+  }
 
   server.stop();
   Serial.println("HTTP server stopped");
